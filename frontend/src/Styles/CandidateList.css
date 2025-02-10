@@ -1,0 +1,23 @@
+.candidateList {
+     width: 90%;
+     margin: auto;
+     gap: 5rem;
+     margin-top: 5rem;
+}
+
+.errorField ,.successField,.greenField{
+     width: 50%;
+     /* height: max-content; */
+     margin: auto;
+     margin-top: 10px;
+     justify-content: center;
+     align-items: center;
+     padding: 1rem;
+     font-size: 16px;
+     color: white;
+     text-align: center;
+     border-radius: 10px;
+     font-weight: 600;
+     background-color: rgb(241, 65, 11);
+}
+
