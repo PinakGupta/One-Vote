@@ -14,9 +14,9 @@ router.route('/admin-data').get(getAdminDetails)
 // GET District State List
 router.route('/district-state').get(getStateDistrictsData)
 // GET Candidates List
-router.route('/').get(verifyJwt, getCandidate)
+router.route('/').get(getCandidate)
 // GET a specific Candidate
-router.route('/:id').get(verifyJwt, getSpecificCandidate)
-router.route('/:id').post(verifyJwt, voteCandidate)
+router.route('/:id').get( getSpecificCandidate)
+router.route('/:id').post( voteCandidate)
 
 export default router

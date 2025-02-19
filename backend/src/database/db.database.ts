@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose"
 import { ApiError } from "../utils/handlers"
 import env from "../utils/env"
@@ -9,8 +8,8 @@ export const mongoDB = async () => {
    try {
       const connection = await mongoose.connect(`${env.mongoURL}`)
       if (!connection) throw new ApiError(500, "connection can not be established")
-         console.log("Connected to MongoDB")
-      // await createAdmin()
+      console.log("Connected to MongoDB")
+      // await createAdmin() // Now no arguments are needed here
       // await createStateAndDistrict()
    }
    catch (err: any) {

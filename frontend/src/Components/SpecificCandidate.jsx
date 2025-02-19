@@ -133,26 +133,14 @@ function SpecificCandidate() {
                </div>
                <div className="section-2 flex  gap-10 flex-col">
                   <p className='text-2xl md:text-3xl lg:text-4xl  font-medium'>Promises</p>
-                  <div className="promises p-4">
-                     {candidateData.promise && candidateData.promise.map((item, index) => (
-                        <div className="promiseList" key={index}>
-                           <p className='text-xl md:text-2xl lg:text-3xl '>`~  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis corporis quis cupiditate {item} similique magni rem voluptates aliquid saepe! Sint sequi culpa rerum fugit error vel sapiente! In, aut adipisci. Voluptas? `</p>
-                           <br />
-                           <p className='text-xl md:text-2xl lg:text-3xl '>`~  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis corporis quis cupiditate similique {item} magni rem voluptates aliquid saepe! Sint sequi culpa rerum fugit error vel sapiente! In, aut adipisci. Voluptas?`</p>
-                           <br />
-                           <p className='text-xl md:text-2xl lg:text-3xl '>`~  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis corporis quis cupiditate {item} similique magni rem voluptates aliquid saepe! Sint sequi culpa rerum fugit error vel sapiente! In, aut adipisci. Voluptas? `</p>
-                           <br />
-                           <p className='text-xl md:text-2xl lg:text-3xl '>`~  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis corporis quis cupiditate similique {item} magni rem voluptates aliquid saepe! Sint sequi culpa rerum fugit error vel sapiente! In, aut adipisci. Voluptas?`</p>
-                           <br />
-                           <p className='text-xl md:text-2xl lg:text-3xl '>`~  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis corporis quis cupiditate {item} similique magni rem voluptates aliquid saepe! Sint sequi culpa rerum fugit error vel sapiente! In, aut adipisci. Voluptas? `</p>
-                           <br />
-                           <p className='text-xl md:text-2xl lg:text-3xl '>`~  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis corporis quis cupiditate similique {item} magni rem voluptates aliquid saepe! Sint sequi culpa rerum fugit error vel sapiente! In, aut adipisci. Voluptas?`</p>
-
-                        </div>
-                     ))}
-
-                  </div>
-
+                     <div className="promises p-4">
+                        {candidateData.promise && candidateData.promise.map((item, index) => (
+                           <div className="promiseList" key={index}>
+                              <p className="text-xl md:text-2xl lg:text-3xl">{`~ ${item}`}</p>
+                              <br />
+                           </div>
+                        ))}
+                     </div>
                </div>
             </div>
          </div >

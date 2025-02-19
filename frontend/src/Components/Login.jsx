@@ -207,25 +207,35 @@ function Login() {
    
          // Check the full structure of the response
          console.log(response.data); // Log full response
-   
+
+         //  admin ke liye 2 data and user ke liye 3 data
          // Safely access the response data
          const userData = response?.data?.data?.data;
    
          if (userData) {
+
+            // admin ke liye response.data.data.token and user ke liye response.data.data.accessToken
             localStorage.setItem("accessToken", response.data.data.accessToken);
+
+
+            // user ke liye
+            const id = userData._id;
+
+            // admin ke liye
+            // const id = userData.user._id;
    
-            console.log(userData._id); // Log the user ID
+            console.log(id); // Log the user ID
    
             // Proceed with setting userId and navigating
-            updateVisitorId(userData._id);
-            dispatch(setUserId(userData._id));
+            updateVisitorId(id);
+            dispatch(setUserId(id));
    
             if (userData.role === 'user') {
                changeVisitorType('user');
-               navigate(`/${userData._id}`);
+               navigate(`/${id}`);
             } else {
                changeVisitorType('admin');
-               navigate(`/admin/${userData._id}`);
+               navigate(`/admin/${id}`);
             }
    
             setData({
