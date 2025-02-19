@@ -8,6 +8,7 @@ import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.ut
 export const addCandidate = async (req: Request, res: Response) => {
 
    const { ...rest } = req.body
+   console.log("hi")
    for (const i in rest) {
       const value = rest[i]
       if (typeof value === 'string' && value.trim().length === 0) {
@@ -19,20 +20,22 @@ export const addCandidate = async (req: Request, res: Response) => {
       uniqueId: rest.uniqueId,
       voterId: rest.voterId
    })
+   console.log("Present")
    if (existedCandidate) throw new ApiError(400, 'Already Exists',)
-
+      
    const avatarLocalPath = req.file?.path
-
    if (!avatarLocalPath) throw new ApiError(400, 'Avatar is Required')
 
    const uploadAvatar = await uploadOnCloudinary(avatarLocalPath)
    if (!uploadAvatar) throw new ApiError(400, 'Avatar is required in this field')
+   console.log("File Uploaded")
 
    const arrayOfPromise = rest.promise.split(", ").map((item: string) => item.trim().replace(/'/g, ""));
-
+   console.log("object created")
+   
    const candidate = await Candidate.create({
       firstName: rest.firstName,
-      uniqueId: rest.unqiueId,
+      uniqueId: rest.uniqueId,
       avatar: uploadAvatar.url,
       representative: rest.representative,
       lastName: rest.lastName,
@@ -42,6 +45,7 @@ export const addCandidate = async (req: Request, res: Response) => {
       dob: rest.dob,
       promise: arrayOfPromise
    })
+   console.log("created candidate")
    if (!candidate) throw new ApiError(500, 'problem in creating a candidate')
 
    return ApiResponse(res, 200, 'Candidate Added Successfully', candidate)

@@ -69,7 +69,7 @@ function AddCandidate() {
          })
          if (!response) console.log(response)
          console.log(response.data)
-         setData(Object.keys(initialData).reduce((acc, key) => {
+         setData(Object.keys(data).reduce((acc, key) => {
             acc[key] = '';
             return acc;
          }, {}))

@@ -59,7 +59,7 @@ function AdminHome() {
                          <Button innerText={'Logout'} onClick={handleClick} />
                     </div>
                     <div className="admin-headings flex flex-col gap-10">
-                         <p className="heading admin-heading font-extrabold text-5xl md:text-6xl lg:text-7xl">Welcome, Mohit Soni ~ It's been a while</p>
+                         <p className="heading admin-heading font-extrabold text-5xl md:text-6xl lg:text-7xl">Welcome, Admin ~ It's been a while</p>
                          <p className="admin-subheading  text-2xl md:text-3xl lg:text-4xl">What you are planning to do?</p>
                     </div>
                     <div className="admin-functionalities flex gap-10">
