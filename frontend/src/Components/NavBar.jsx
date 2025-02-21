@@ -42,26 +42,56 @@ const Navbar = () => {
      // }
      const handleLogout = async () => {
           const token = localStorage.getItem('accessToken');
-          try {
-             const response = await api.post(`${server}/auth/logout`, null, {
-                headers: {
-                   Authorization: `Bearer ${token}`
-                },
-               //  withCredentials: true // Important if your auth uses cookies
-             });
-               console.log(response)
-             if (response.status === 200) {
-                localStorage.removeItem('accessToken');
-                updateVisitorId('');
-                changeVisitorType('');
-                dispatch(setUserId(''));
-                navigate('/');
-             }
-          } catch (err) {
-             console.error("Logout Error:", err);
-             setErr(err.response?.data?.message || err.message || 'Sorry for the inconvenience, we are working to resolve the issue.');
+          console.log("Token:", token); // Check if token is present and valid
+      
+          if (!token) {
+              console.error("No token found");
+              return;
           }
-       };
+      
+          try {
+              const response = await api.post(`${server}/auth/logout`, null, {
+                  headers: {
+                      Authorization: `Bearer ${token}`
+                  }
+              });
+      
+              console.log(response);
+              if (response.status === 200) {
+                  localStorage.removeItem('accessToken');
+                  updateVisitorId('');
+                  changeVisitorType('');
+                  dispatch(setUserId(''));
+                  navigate('/');
+              }
+          } catch (err) {
+              console.error("Logout Error:", err);
+              setErr(err.response?.data?.message || err.message || 'Sorry for the inconvenience, we are working to resolve the issue.');
+          }
+      };
+      
+     // const handleLogout = async () => {
+     //      const token = localStorage.getItem('accessToken');
+     //      try {
+     //         const response = await api.post(`${server}/auth/logout`, null, {
+     //            headers: {
+     //               Authorization: `Bearer ${token}`
+     //            },
+     //           //  withCredentials: true // Important if your auth uses cookies
+     //         });
+     //           console.log(response)
+     //         if (response.status === 200) {
+     //            localStorage.removeItem('accessToken');
+     //            updateVisitorId('');
+     //            changeVisitorType('');
+     //            dispatch(setUserId(''));
+     //            navigate('/');
+     //         }
+     //      } catch (err) {
+     //         console.error("Logout Error:", err);
+     //         setErr(err.response?.data?.message || err.message || 'Sorry for the inconvenience, we are working to resolve the issue.');
+     //      }
+     //   };
        
 
      return (
