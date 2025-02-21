@@ -21,7 +21,7 @@ export const login = async (req: Request, res: Response) => {
       if(userData===null)
          console.log("BAD REQUEST")
       else
-      console.log(userData._id)
+      // console.log(userData._id)
       if (userData) {
          const validatePassword = await bcrypt.compare(password, userData.password)
 

@@ -137,6 +137,7 @@ export const getCandidate = async (_req: Request, res: Response) => {
 export const getSpecificCandidate = async (req: Request, res: Response) => {
 
    const { id } = req.params
+   console.log(id);
    if (!id) throw new ApiError(400, 'ID is required')
 
    if (!mongoose.Types.ObjectId.isValid(id)) {

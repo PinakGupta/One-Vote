@@ -117,13 +117,16 @@ export const updateUserPassword = async (req: Request, res: Response) => {
 
 export const voteCandidate = async (req: Request, res: Response) => {
    try {
+
       const currentUser = req.data
+      console.log(currentUser)
+      console.log(currentUser.isVoted)
       if (currentUser.isVoted) throw new ApiError(400, 'User Already Voted')
+      const { id } = req.params
+      console.log(id)
+      if (!id) throw new ApiError(400, 'Candidate does not exist')
 
-      const { candidateId } = req.params
-      if (!candidateId) throw new ApiError(400, 'Candidate does not exist')
-
-      const candidateData = await Candidate.findById(candidateId)
+      const candidateData = await Candidate.findById({_id:id});
       if (!candidateData) throw new ApiError(400, "Candidate not found")
 
       candidateData.votedUsers = candidateData.votedUsers || []
