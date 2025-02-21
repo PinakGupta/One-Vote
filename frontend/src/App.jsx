@@ -21,6 +21,10 @@ import AdminHome from "./Components/Admin/AdminHome.jsx"
 import UpdateCandidate from "./Components/Admin/updateCandidate.jsx"
 import AddCandidate from "./Components/Admin/AddCandidate.jsx"
 import DeleteCandidate from "./Components/Admin/DeleteCandidate.jsx"
+import ViewVoteCount from "./Components/Admin/ViewVoteCount.jsx"
+import UpdateCandidateForm from "./Components/Admin/UpdateCandidateForm.jsx"
+import ViewCandidates from "./Components/Admin/viewCandidates.jsx"
+import CandidateDetails from "./Components/Admin/CandidateDetails.jsx"
 
 function App() {
 
@@ -60,6 +64,27 @@ function App() {
                     <Provider store={store}>
                          <userContext.Provider value={{ visitorType, changeVisitorType, visitorId, updateVisitorId, userData, updateUserData }}>
                               <candidateContext.Provider value={{ candidateId, updateCandidateId }}>
+                                   {/* <Routes>
+                                        <Route path="/" element={<Home />} />
+                                        <Route path="/:id" element={<Home />} />
+                                        <Route path="/api/v1/auth/register" element={<Register />} />
+                                        <Route path="/api/v1/auth/login" element={<Login />} />
+                                        <Route path="/api/v1/auth/login/forget-password" element={<ForgetPass />} />
+                                        <Route path="/api/v1/auth/login/forget-password/create-new-password/:id" element={<NewPass />} />
+                                        <Route path="/:id/api/v1/candidates/candidate-list" element={<CandidateList />} />
+                                        <Route path="/:id/api/v1/candidates/candidate-list/:id" element={<SpecificCandidate />} />
+                                        <Route path="/:id/api/v1/user/profile" element={<Profile />} />
+                                        <Route path="/:id/api/v1/user/profile/update" element={<ProfileUpdate />} />
+                                        <Route path="/:id/api/v1/user/profile/update/password" element={<UpdatePassword />} />
+                                        <Route path="/admin/:id" element={<AdminHome />} />
+                                        <Route path="/admin/:id/add-candidate" element={<AddCandidate />} />
+                                        <Route path="/admin/:id/view-candidates" element={<ViewCandidates/>} />
+                                        <Route path="/admin/:id/view-candidates/candidate/:candidateId" element={<CandidateDetails />} />
+                                        <Route path="/admin/:id/delete-candidate" element={<DeleteCandidate />} />
+                                        <Route path="/admin/:id/update-candidate" element={<UpdateCandidate />} />
+                                        <Route path="/admin/:id/view-count" element={<ViewVoteCount />} />
+                                        <Route path="/admin/update-candidate/:candidateId" element={<UpdateCandidateForm />} />
+                                   </Routes> */}
                                    <Routes>
                                         <Route path="/" element={<Home />} />
                                         <Route path="/:id" element={<Home />} />
@@ -74,13 +99,22 @@ function App() {
                                         <Route path="/:id/api/v1/user/profile/update/password" element={<UpdatePassword />} />
                                         <Route path="/admin/:id" element={<AdminHome />} />
                                         <Route path="/admin/:id/add-candidate" element={<AddCandidate />} />
+                                        
+                                        {/* Nest CandidateDetails inside ViewCandidates */}
+                                        <Route path="/admin/:id/view-candidates" element={<ViewCandidates />}>
+                                             <Route path="candidate/:candidateId" element={<CandidateDetails />} />
+                                        </Route>
+
                                         <Route path="/admin/:id/delete-candidate" element={<DeleteCandidate />} />
                                         <Route path="/admin/:id/update-candidate" element={<UpdateCandidate />} />
-                                   </Routes>
+                                        <Route path="/admin/:id/view-count" element={<ViewVoteCount />} />
+                                        <Route path="/admin/update-candidate/:candidateId" element={<UpdateCandidateForm />} />
+                              </Routes>
+
                               </candidateContext.Provider>
                          </userContext.Provider>
                     </Provider>
-               </BrowserRouter >
+               </BrowserRouter >   
           </>
      )
 }

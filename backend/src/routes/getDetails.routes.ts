@@ -7,10 +7,12 @@ import { getStateDistrictsData } from "../controllers/getStateDistrict.controlle
 import { getCandidate, getSpecificCandidate } from '../controllers/candidates.controller'
 import { verifyJwt } from '../middlewares/auth.middleware'
 import { voteCandidate } from '../controllers/users.controller'
+import { getCandidateVoteCount } from '../controllers/getCandidateVoteCount.controller'
 const router = Router()
 
 // GET admin Data
 router.route('/admin-data').get(getAdminDetails)
+router.route('/:id/view-count').get(verifyJwt,getCandidateVoteCount);
 // GET District State List
 router.route('/district-state').get(getStateDistrictsData)
 // GET Candidates List
