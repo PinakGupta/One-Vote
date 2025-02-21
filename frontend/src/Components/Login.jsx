@@ -210,19 +210,19 @@ function Login() {
 
          //  admin ke liye 2 data and user ke liye 3 data
          // Safely access the response data
-         const userData = response?.data?.data?.data;
+         const userData = response?.data?.data;
    
          if (userData) {
 
             // admin ke liye response.data.data.token and user ke liye response.data.data.accessToken
-            localStorage.setItem("accessToken", response.data.data.accessToken);
+            localStorage.setItem("accessToken", response.data.data.token);
 
 
             // user ke liye
-            const id = userData._id;
+            // const id = userData._id;
 
             // admin ke liye
-            // const id = userData.user._id;
+            const id = userData.user._id;
    
             console.log(id); // Log the user ID
    
