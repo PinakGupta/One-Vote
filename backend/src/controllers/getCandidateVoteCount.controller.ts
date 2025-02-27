@@ -75,22 +75,8 @@ export const getResultsVisibility = async (_req: Request, res: Response) => {
     }
 };
 
-// Get candidate vote counts (modified to check visibility first)
-export const getCandidateVoteCount = async (req: Request, res: Response) => {
+export const getCandidateVoteCount = async (_: Request, res: Response): Promise<Response> => {
     try {
-        // Check if the request is from an admin
-        const userData = req.data;
-        const isAdmin = userData.role === 'admin';
-        
-        if (!isAdmin) {
-            // If it's a regular user, check if results are visible
-            const admin = await Admin.findOne({});
-            
-            if (!admin || !admin.showResults) {
-                throw new ApiError(403, 'Election results are not available yet');
-            }
-        }
-        
         const candidates = await Candidate.find();
 
         const voteCounts = candidates.map(candidate => ({
@@ -101,11 +87,9 @@ export const getCandidateVoteCount = async (req: Request, res: Response) => {
             partyName: candidate.representative
         }));
 
-        return res.status(200).json({
-            success: true,
-            data: voteCounts
-        });
-    } catch (error: any) {
-        throw new ApiError(error.statusCode || 500, error.message || 'Error fetching vote counts');
+        return res.status(200).json(voteCounts);
+    } catch (error) {
+        console.error('Error fetching vote counts:', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
