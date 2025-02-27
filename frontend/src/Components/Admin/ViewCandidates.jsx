@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useParams, useNavigate, Outlet } from "react-router-dom";
+import { Link, useParams, Outlet } from "react-router-dom";
 import api from "../../axiosInstance";
 import { server } from "../../server";
 import { userContext } from "../../context";
@@ -12,7 +12,6 @@ function ViewCandidates() {
     const [error, setError] = useState("");
     const [expandedPromises, setExpandedPromises] = useState({});
     const { id } = useParams(); // Election ID
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (id) {
@@ -93,7 +92,6 @@ function ViewCandidates() {
                                         <th className="px-10 py-6 text-left text-xl font-semibold">Details</th>
                                         <th className="px-10 py-6 text-left text-xl font-semibold">Location</th>
                                         <th className="px-10 py-6 text-left text-xl font-semibold">Promises</th>
-                                        <th className="px-10 py-6 text-center text-xl font-semibold">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -178,16 +176,6 @@ function ViewCandidates() {
                                                         </div>
                                                     )}
                                                 </div>
-                                            </td>
-
-                                            {/* Actions Column */}
-                                            <td className="px-10 py-8 text-center">
-                                                <button
-                                                    onClick={() => navigate(`/admin/${id}/view-candidates/candidate/${candidate._id}`)}
-                                                    className="inline-block px-8 py-3.5 bg-[#0099ff] text-white rounded-lg hover:bg-[#0077cc] transition-colors text-lg font-medium"
-                                                >
-                                                    View Details
-                                                </button>
                                             </td>
                                         </tr>
                                     ))}
