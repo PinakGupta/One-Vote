@@ -68,6 +68,7 @@ function AdminHome() {
                          <Button innerText={'Remove a Candidate'} link={'delete-candidate'} />
                          <Button innerText={'Update a Candidate'} link={'update-candidate'} />
                          <Button innerText={'View Vote Counts'} link = {'view-count'} />
+                         <Button innerText={'Declare Results'} link = {'results-toggler'} />
                          {/* <Button innerText={'View Vote Counts'} /> */}
                     </div>
                </div>

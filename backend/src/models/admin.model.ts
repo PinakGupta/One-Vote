@@ -20,6 +20,10 @@ const adminSchema: Schema = new Schema({
    isVoted: {
       type: Boolean,
       default: true
+   },
+   showResults: {
+      type: Boolean,
+      default: false
    }
 })
 
