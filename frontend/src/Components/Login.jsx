@@ -160,97 +160,129 @@ function Login() {
    //       const user = {
    //          uniqueId: data.uniqueId,
    //          password: data.password
-   //       }
+   //       };
+   
    //       const response = await axios.post(`${server}/auth/login`, user, {
    //          headers: {
    //             "Content-Type": "application/json"
    //          }
-   //       })
-   //       localStorage.setItem("accessToken", response.data.data.accessToken)
-   //       if (response.status === 200) {
-   //          console.log(response.data.data.data._id)
-   //          updateVisitorId(response.data.data.data.user._id)
-   //          dispatch(setUserId(response.data.data.data.user._id))
-   //          if (response.data.data.data.user.role === 'user') {
-   //             changeVisitorType('user')
-   //             navigate(`/${response.data.data.data.user._id}`)
+   //       });
+   
+   //       // Check the full structure of the response
+   //       console.log(response.data); // Log full response
+
+   //       //  admin ke liye 2 data and user ke liye 3 data
+   //       // Safely access the response data
+   //       const userData = response?.data?.data?.data;
+   
+   //       if (userData) {
+
+   //          // admin ke liye response.data.data.token and user ke liye response.data.data.accessToken
+   //          localStorage.setItem("accessToken", response.data.data.accessToken);
+
+
+   //          // user ke liye
+   //          const id = userData._id;
+
+   //          // // admin ke liye
+   //          // const id = userData.user._id;
+   
+   //          console.log(id); // Log the user ID
+   
+   //          // Proceed with setting userId and navigating
+   //          updateVisitorId(id);
+   //          dispatch(setUserId(id));
+   
+   //          if (userData.role === 'user') {
+   //             changeVisitorType('user');
+   //             navigate(`/${id}`);
    //          } else {
-   //             changeVisitorType('admin')
-   //             navigate(`/admin/${response.data.data.data.user._id}`)
+   //             changeVisitorType('admin');
+   //             navigate(`/admin/${id}`);
    //          }
+   
    //          setData({
    //             uniqueId: '',
    //             password: '',
-   //          })
+   //          });
    //       } else {
-   //          throw new Error("Error while login a user")
+   //          throw new Error("Error: Data is not in the expected structure.");
    //       }
    //    } catch (error) {
-   //       console.log(error)
-   //       setErr(error.response?.data?.message || error.message || 'An error occured while login a user')
+   //       console.log(error);
+   //       setErr(error.response?.data?.message || error.message || 'An error occurred while logging in the user');
    //    }
-   // }
-
+   // };
+   
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-         const user = {
-            uniqueId: data.uniqueId,
-            password: data.password
-         };
-   
-         const response = await axios.post(`${server}/auth/login`, user, {
-            headers: {
-               "Content-Type": "application/json"
-            }
-         });
-   
-         // Check the full structure of the response
-         console.log(response.data); // Log full response
-
-         //  admin ke liye 2 data and user ke liye 3 data
-         // Safely access the response data
-         const userData = response?.data?.data?.data;
-   
-         if (userData) {
-
-            // admin ke liye response.data.data.token and user ke liye response.data.data.accessToken
-            localStorage.setItem("accessToken", response.data.data.accessToken);
-
-
-            // user ke liye
-            const id = userData._id;
-
-            // // admin ke liye
-            // const id = userData.user._id;
-   
-            console.log(id); // Log the user ID
-   
-            // Proceed with setting userId and navigating
-            updateVisitorId(id);
-            dispatch(setUserId(id));
-   
-            if (userData.role === 'user') {
-               changeVisitorType('user');
-               navigate(`/${id}`);
-            } else {
-               changeVisitorType('admin');
-               navigate(`/admin/${id}`);
-            }
-   
-            setData({
-               uniqueId: '',
-               password: '',
-            });
-         } else {
-            throw new Error("Error: Data is not in the expected structure.");
-         }
+        const user = {
+          uniqueId: data.uniqueId,
+          password: data.password
+        };
+        
+        const response = await axios.post(`${server}/auth/login`, user, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        
+        // Log full response for debugging
+        console.log(response.data);
+        
+        // Safely access nested data properties
+        const responseData = response?.data?.data;
+        
+        if (!responseData) {
+          throw new Error("Error: Data is not in the expected structure.");
+        }
+        
+        // Determine if we're handling admin or user data
+        const userData = responseData.data || responseData;
+        const userRole = userData.role;
+        
+        // Handle token storage - can be accessToken or token
+        const token = responseData.accessToken || responseData.token;
+        localStorage.setItem("accessToken", token);
+        
+        // Determine the correct user ID based on role
+        let userId;
+        if (userRole === 'admin') {
+          // For admin, the ID might be nested in user object
+          userId = userData.user?._id || userData._id;
+        } else {
+          // For regular users
+          userId = userData._id;
+        }
+        
+        console.log(userId); // Log the user ID
+        
+        // Update state with user ID
+        updateVisitorId(userId);
+        dispatch(setUserId(userId));
+        
+        // Navigate based on role
+        if (userRole === 'user') {
+          changeVisitorType('user');
+          navigate(`/${userId}`);
+        } else {
+          changeVisitorType('admin');
+          navigate(`/admin/${userId}`);
+        }
+        
+        // Reset form data
+        setData({
+          uniqueId: '',
+          password: '',
+        });
+        
       } catch (error) {
-         console.log(error);
-         setErr(error.response?.data?.message || error.message || 'An error occurred while logging in the user');
+        console.log(error);
+        setErr(error.response?.data?.message || error.message || 'An error occurred while logging in the user');
       }
-   };
-   
+    };
+    
    useEffect(() => {
       const timer = setTimeout(() => {
          setErr('');
