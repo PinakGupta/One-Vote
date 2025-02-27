@@ -214,74 +214,132 @@ function Login() {
    //    }
    // };
    
+   // const handleSubmit = async (e) => {
+   //    e.preventDefault();
+   //    try {
+   //      const user = {
+   //        uniqueId: data.uniqueId,
+   //        password: data.password
+   //      };
+        
+   //      const response = await axios.post(`${server}/auth/login`, user, {
+   //        headers: {
+   //          "Content-Type": "application/json"
+   //        }
+   //      });
+        
+   //      // Log full response for debugging
+   //      console.log(response.data);
+        
+   //      // Safely access nested data properties
+   //      const responseData = response?.data?.data;
+        
+   //      if (!responseData) {
+   //        throw new Error("Error: Data is not in the expected structure.");
+   //      }
+        
+   //      // Determine if we're handling admin or user data
+   //    //   const userData = responseData.data || responseData;
+   //    //   const userRole = userData.role;
+   //    let userData='';
+   //    let userRole='';
+   //    if(responseData.data.role==='user')
+   //    {
+   //       userData=responseData.data;
+   //       userRole=userData.role
+   //    }
+   //    else
+   //    {
+   //       userData=responseData;
+   //       userRole=userData.role
+   //    }
+        
+   //      // Handle token storage - can be accessToken or token
+   //      const token = responseData.accessToken || responseData.token;
+   //      localStorage.setItem("accessToken", token);
+        
+   //      // Determine the correct user ID based on role
+   //      let userId;
+   //      if (userRole === 'admin') {
+   //        // For admin, the ID might be nested in user object
+   //        userId = userData.user?._id || userData._id;
+   //      } else {
+   //        // For regular users
+   //        userId = userData._id;
+   //      }
+        
+   //      console.log(userId); // Log the user ID
+        
+   //      // Update state with user ID
+   //      updateVisitorId(userId);
+   //      dispatch(setUserId(userId));
+        
+   //      // Navigate based on role
+   //      if (userRole === 'user') {
+   //        changeVisitorType('user');
+   //        navigate(`/${userId}`);
+   //      } else {
+   //        changeVisitorType('admin');
+   //        navigate(`/admin/${userId}`);
+   //      }
+        
+   //      // Reset form data
+   //      setData({
+   //        uniqueId: '',
+   //        password: '',
+   //      });
+        
+   //    } catch (error) {
+   //      console.log(error);
+   //      setErr(error.response?.data?.message || error.message || 'An error occurred while logging in the user');
+   //    }
+   //  };
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        const user = {
-          uniqueId: data.uniqueId,
-          password: data.password
-        };
-        
-        const response = await axios.post(`${server}/auth/login`, user, {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-        
-        // Log full response for debugging
-        console.log(response.data);
-        
-        // Safely access nested data properties
-        const responseData = response?.data?.data;
-        
-        if (!responseData) {
-          throw new Error("Error: Data is not in the expected structure.");
-        }
-        
-        // Determine if we're handling admin or user data
-        const userData = responseData.data || responseData;
-        const userRole = userData.role;
-        
-        // Handle token storage - can be accessToken or token
-        const token = responseData.accessToken || responseData.token;
-        localStorage.setItem("accessToken", token);
-        
-        // Determine the correct user ID based on role
-        let userId;
-        if (userRole === 'admin') {
-          // For admin, the ID might be nested in user object
-          userId = userData.user?._id || userData._id;
-        } else {
-          // For regular users
-          userId = userData._id;
-        }
-        
-        console.log(userId); // Log the user ID
-        
-        // Update state with user ID
-        updateVisitorId(userId);
-        dispatch(setUserId(userId));
-        
-        // Navigate based on role
-        if (userRole === 'user') {
-          changeVisitorType('user');
-          navigate(`/${userId}`);
-        } else {
-          changeVisitorType('admin');
-          navigate(`/admin/${userId}`);
-        }
-        
-        // Reset form data
-        setData({
-          uniqueId: '',
-          password: '',
-        });
-        
+         const user = {
+            uniqueId: data.uniqueId,
+            password: data.password
+         };
+         
+         const response = await axios.post(`${server}/auth/login`, user, {
+            headers: {
+               "Content-Type": "application/json"
+            }
+         });
+   
+         console.log("Full Response:", response.data); // Debugging
+         
+         const responseData = response?.data?.data;
+         if (!responseData) throw new Error("Invalid response structure.");
+   
+         const userData = responseData.data || responseData; 
+         const userRole = userData.role;
+         const token = responseData.accessToken || responseData.token;
+         const userId = userData.user?._id || userData._id;
+   
+         if (!userId) throw new Error("User ID not found in response.");
+         
+         // Store token securely
+         localStorage.setItem("accessToken", token);
+   
+         // Update user state
+         updateVisitorId(userId);
+         dispatch(setUserId(userId));
+         changeVisitorType(userRole);
+         
+         // Redirect based on role
+         navigate(userRole === 'user' ? `/${userId}` : `/admin/${userId}`);
+   
+         // Reset form data
+         setData({ uniqueId: '', password: '' });
+   
       } catch (error) {
-        console.log(error);
-        setErr(error.response?.data?.message || error.message || 'An error occurred while logging in the user');
+         console.error("Login Error:", error);
+         setErr(error.response?.data?.message || error.message || "An error occurred while logging in.");
       }
-    };
+   };
+   
     
    useEffect(() => {
       const timer = setTimeout(() => {
