@@ -127,6 +127,8 @@ const Navbar = () => {
                                         Profile
                                    </Link>
                               </li>
+                                   &&
+                              <Button innerText="View Result" link="declare-result" />
                          }
 
                     </ul>

@@ -21,9 +21,9 @@ const ViewVoteCount = () => {
       }
 
       try {
-        console.log("Fetching data from:", `${server}/admin/${id}/view-count`);
+        // console.log("Fetching data from:", `${server}/admin/${id}/view-count`);
 
-        const response = await axios.get(`${server}/admin/${id}/view-count`, {
+        const response = await axios.get(`${server}/admin/view-count`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },

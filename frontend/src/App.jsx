@@ -26,6 +26,7 @@ import UpdateCandidateForm from "./Components/Admin/UpdateCandidateForm.jsx"
 import ViewCandidates from "./Components/Admin/ViewCandidates.jsx"
 import CandidateDetails from "./Components/Admin/CandidateDetails.jsx"
 import AdminResultsToggle from "./Components/Admin/AdminResultsToggle.jsx"
+import UserVoteResults from "./Components/UserVoteResults.jsx"
 
 function App() {
 
@@ -94,7 +95,9 @@ function App() {
                                         <Route path="/api/v1/auth/login/forget-password" element={<ForgetPass />} />
                                         <Route path="/api/v1/auth/login/forget-password/create-new-password/:id" element={<NewPass />} />
                                         <Route path="/:id/api/v1/candidates/candidate-list" element={<CandidateList />} />
-                                        
+
+                                        <Route path="/:id/declare-result" element={<UserVoteResults />} />
+
                                         <Route path="/:id/api/v1/candidates/candidate-list/:id" element={<SpecificCandidate />} />
                                         <Route path="/:id/api/v1/user/profile" element={<Profile />} />
                                         <Route path="/:id/api/v1/user/profile/update" element={<ProfileUpdate />} />

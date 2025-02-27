@@ -20,7 +20,7 @@ const AdminResultsToggle = () => {
 
         const token = localStorage.getItem('accessToken');
         
-        const response = await axios.get(`${server}/admin/${id}/results-visibility`, {
+        const response = await axios.get(`${server}/admin/results-visibility`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

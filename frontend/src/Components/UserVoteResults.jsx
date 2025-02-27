@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { server } from "../../server";
+import { server } from "../server.js";
 
 const UserVoteResults = () => {
   const [candidates, setCandidates] = useState([]);
@@ -8,12 +8,17 @@ const UserVoteResults = () => {
   const [error, setError] = useState(null);
   const [resultsVisible, setResultsVisible] = useState(false);
 
-  const accessToken = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     const checkResultsVisibility = async () => {
       try {
-        const response = await axios.get(`${server}/admin/results-visibility`);
+        const response = await axios.get(`${server}/admin/results-visibility`,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+              },
+        });
+        console.log(response)
         setResultsVisible(response.data.showResults);
 
         if (response.data.showResults) {
@@ -32,7 +37,7 @@ const UserVoteResults = () => {
       try {
         const response = await axios.get(`${server}/admin/view-count`, {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -55,7 +60,7 @@ const UserVoteResults = () => {
 
     checkResultsVisibility();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
+  }, [token]);
 
   if (!resultsVisible) {
     return (

@@ -12,10 +12,10 @@ const router = Router()
 
 // GET admin Data
 router.route('/admin-data').get(getAdminDetails)
-router.route('/:id/view-count').get(verifyJwt,getCandidateVoteCount);
+router.route('/view-count').get(verifyJwt,getCandidateVoteCount);
 
 router.route('/:id/toggle-results').patch(verifyJwt,toggleResultsVisibility);
-router.route('/:id/results-visibility').get(getResultsVisibility);
+router.route('/results-visibility').get(getResultsVisibility);
 
 
 
