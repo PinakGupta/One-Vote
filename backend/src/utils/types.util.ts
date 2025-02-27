@@ -46,14 +46,22 @@ export interface Updates {
    password?: string
 }
 
+// export interface AdminModel extends Document {
+//    _id: mongoose.Types.ObjectId,
+//    uniqueId: number,
+//    password: string,
+//    role?: string
+//    isVoted?:boolean
+// }
+// Add this to your types.util.ts file to include the showResults field
 export interface AdminModel extends Document {
-   _id: mongoose.Types.ObjectId,
-   uniqueId: number,
-   password: string,
-   role?: string
-   isVoted?:boolean
+   uniqueId: number;
+   password: string;
+   role: string;
+   isVoted: boolean;
+   showResults: boolean;
+   isPasswordCorrect(password: string): Promise<boolean>;
 }
-
 
 export interface CandidateModel extends Document {
    _id: mongoose.Types.ObjectId

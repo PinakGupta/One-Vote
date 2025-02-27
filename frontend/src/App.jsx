@@ -23,8 +23,9 @@ import AddCandidate from "./Components/Admin/AddCandidate.jsx"
 import DeleteCandidate from "./Components/Admin/DeleteCandidate.jsx"
 import ViewVoteCount from "./Components/Admin/ViewVoteCount.jsx"
 import UpdateCandidateForm from "./Components/Admin/UpdateCandidateForm.jsx"
-import ViewCandidates from "./Components/Admin/viewCandidates.jsx"
+import ViewCandidates from "./Components/Admin/ViewCandidates.jsx"
 import CandidateDetails from "./Components/Admin/CandidateDetails.jsx"
+import AdminResultsToggle from "./Components/Admin/AdminResultsToggle.jsx"
 
 function App() {
 
@@ -109,8 +110,9 @@ function App() {
                                         <Route path="/admin/:id/update-candidate" element={<UpdateCandidate />} />
                                         <Route path="/admin/:id/view-count" element={<ViewVoteCount />} />
                                         <Route path="/admin/update-candidate/:candidateId" element={<UpdateCandidateForm />} />
-                              </Routes>
 
+                                        <Route path="/admin/:id/results-toggler" element={<AdminResultsToggle />} />
+                              </Routes>
                               </candidateContext.Provider>
                          </userContext.Provider>
                     </Provider>
