@@ -15,7 +15,7 @@
       "nodejs",
       "full stack"
    ],
-   "author": "Mohit Soni",
+   "author": "OneVote",
    "license": "ISC",
    "dependencies": {
       "bcrypt": "^5.1.1",
