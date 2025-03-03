@@ -58,7 +58,7 @@ function Register() {
             const userData = response?.data?.data;
             console.log(userData)
             changeVisitorType('user')
-            localStorage.setItem('accessToken', response.data.data.accessToken)
+            localStorage.setItem('accessToken', response.data.cookies.token)
             console.log(userData._id); // Log the user ID
                
             // Proceed with setting userId and navigating
