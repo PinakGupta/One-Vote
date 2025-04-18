@@ -6,8 +6,7 @@ import { uploadOnCloudinary } from '../utils/cloudinary.util';
 
 export const createElection = async (req: Request, res: Response) => {
     try {
-        const admin = req.data;
-        const { name, electionId } = req.body;
+        const { name, electionId,admin } = req.body;
 
         if (!name || !electionId) {
             throw new ApiError(400, 'Election name and ID are required');
@@ -19,7 +18,7 @@ export const createElection = async (req: Request, res: Response) => {
         }
 
         const election = await Election.create({
-            admin: admin._id,
+            admin: admin,
             name,
             electionId
         });
