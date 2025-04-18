@@ -13,6 +13,11 @@ const candidateSchema: Schema = new Schema({
       type: String,
       required: true
    },
+   election: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Election',
+      required: true
+  },
    avatar: {
       type: String,
       required: true

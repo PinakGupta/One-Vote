@@ -46,14 +46,7 @@ export interface Updates {
    password?: string
 }
 
-// export interface AdminModel extends Document {
-//    _id: mongoose.Types.ObjectId,
-//    uniqueId: number,
-//    password: string,
-//    role?: string
-//    isVoted?:boolean
-// }
-// Add this to your types.util.ts file to include the showResults field
+
 export interface AdminModel extends Document {
    uniqueId: number;
    password: string;
@@ -67,6 +60,7 @@ export interface CandidateModel extends Document {
    _id: mongoose.Types.ObjectId
    firstName: string,
    lastName: string,
+   election: mongoose.Types.ObjectId,
    avatar: string,
    voterId: string,
    uniqueId: number,
@@ -88,4 +82,17 @@ export interface QueryModel extends Document {
    district: string,
    queryType: string,
    message: string
+}
+
+export interface ElectionModel extends Document {
+   admin: mongoose.Types.ObjectId;
+   electionId: string;
+   name: string;
+   voters: number[];
+   candidates: mongoose.Types.ObjectId[];
+   votedUsers: number[];
+   showResults: boolean;
+   startDate: Date;
+   endDate?: Date;
+   isActive: boolean;
 }
