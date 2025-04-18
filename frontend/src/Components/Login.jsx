@@ -468,7 +468,7 @@ function Login() {
       changeVisitorType(userRole);
 
       // Navigate
-      navigate(userRole === 'user' ? `/${userId}` : `/admin/${userId}`);
+      navigate(userRole === 'user' ? `/${userId}` : `/admin/${userId}/election`);
 
       // Reset form
       setData({ uniqueId: '', password: '' });

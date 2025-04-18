@@ -610,17 +610,17 @@ function App() {
                 <Route path="/:id/api/v1/user/profile/update/password" element={<UpdatePassword />} />
                 <Route path="/admin/:id/election" element={<ElectionCreation />} />
                 <Route path="/admin/:id/create-election" element={<CreateElectionForm />} />
-                <Route path="/admin/:id/add-voters" element={<AddVoters />} />
-                <Route path="/admin/:id" element={<AdminHome />} />
-                <Route path="/admin/:id/add-candidate" element={<AddCandidate />} />
-                <Route path="/admin/:id/view-candidates" element={<ViewCandidates />}>
+                <Route path="/admin/:id/election/:electionId/add-voters" element={<AddVoters />} />
+                <Route path="/admin/:id/election/:electionId" element={<AdminHome />} />
+                <Route path="/admin/:id/election/:electionId/add-candidate/" element={<AddCandidate />} />
+                <Route path="/admin/:id/election/:electionId/view-candidates" element={<ViewCandidates />}>
                   <Route path="candidate/:candidateId" element={<CandidateDetails />} />
                 </Route>
-                <Route path="/admin/:id/delete-candidate" element={<DeleteCandidate />} />
-                <Route path="/admin/:id/update-candidate" element={<UpdateCandidate />} />
-                <Route path="/admin/:id/view-count" element={<ViewVoteCount />} />
+                <Route path="/admin/:id/election/:electionId/delete-candidate" element={<DeleteCandidate />} />
+                <Route path="/admin/:id/election/:electionId/update-candidate" element={<UpdateCandidate />} />
+                <Route path="/admin/:id/election/:electionId/view-count" element={<ViewVoteCount />} />
                 <Route path="/admin/update-candidate/:candidateId" element={<UpdateCandidateForm />} />
-                <Route path="/admin/:id/results-toggler" element={<AdminResultsToggle />} />
+                <Route path="/admin/:id/election/:electionId/results-toggler" element={<AdminResultsToggle />} />
               </Routes>
             </candidateContext.Provider>
           </userContext.Provider>
