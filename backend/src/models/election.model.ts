@@ -18,11 +18,12 @@ const electionSchema = new Schema({
     },
     voters: [{
         type: Number,
-        required: true
+        default: []
     }],
     candidates: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Candidate'
+        ref: 'Candidate',
+        default: []
     }],
     votedUsers: [{
         type: Number,
@@ -31,15 +32,6 @@ const electionSchema = new Schema({
     showResults: {
         type: Boolean,
         default: false
-    },
-    startDate: {
-        type: Date,
-        default: Date.now
-    },
-    endDate: Date,
-    isActive: {
-        type: Boolean,
-        default: true
     }
 }, { timestamps: true });
 
