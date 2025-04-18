@@ -15,8 +15,8 @@ import { upload } from '../middlewares/multer.middleware';
 const router = Router();
 
 router.post('/', createElection);
-router.get('/:electionId', verifyJwt, getElection);
-router.patch('/:electionId/voters', verifyJwt, isAdmin, addVoters);
+router.get('/:electionId', getElection);
+router.patch('/:electionId/voters', addVoters);
 router.patch('/:electionId/toggle-results', verifyJwt, isAdmin, toggleResultsVisibility);
 router.get('/:electionId/results', getElectionResults);
 router.get('/:electionId/candidates', verifyJwt, getElectionCandidates);

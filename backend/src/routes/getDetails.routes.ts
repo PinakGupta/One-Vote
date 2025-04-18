@@ -2,7 +2,7 @@
 // this is just to understand how can i get the data from a specific collection. So for that we will create a route to access the data and doing it more clearly we use a controller for admin 
 
 import { Router } from 'express'
-import { getAdminDetails } from "../controllers/getAdminData.controller"
+import { getAdminDetails, getElectionsByAdmin } from "../controllers/getAdminData.controller"
 import { getStateDistrictsData } from "../controllers/getStateDistrict.controller"
 import { getCandidate, getSpecificCandidate } from '../controllers/candidates.controller'
 import { verifyJwt } from '../middlewares/auth.middleware'
@@ -16,7 +16,7 @@ router.route('/view-count').get(verifyJwt,getCandidateVoteCount);
 
 router.route('/:id/toggle-results').patch(verifyJwt,toggleResultsVisibility);
 router.route('/results-visibility').get(getResultsVisibility);
-
+router.route('/:adminId/get-elections').get(getElectionsByAdmin);
 
 
 // GET District State List

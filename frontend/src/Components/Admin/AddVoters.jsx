@@ -1,14 +1,17 @@
 // src/Components/Admin/AddVoters.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import api from '../../axiosInstance';
+import { server } from '../../server';
 
 function AddVoters() {
-  const { id } = useParams(); // Get the admin ID from the route
+  const { id, electionId } = useParams(); // Get admin ID and electionId from the route
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     voterId: '',
   });
+  const [voters, setVoters] = useState([]);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -16,23 +19,74 @@ function AddVoters() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  // Fetch voters for the election
+  const fetchVoters = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        setError('Please log in to add voters');
+        setTimeout(() => setError(''), 2000);
+        return;
+      }
+      console.log(electionId)
+      const response = await api.get(`${server}/elections/${electionId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setVoters(response.data.data.voters || []);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch voters');
+      setTimeout(() => setError(''), 2000);
+    }
+  };
+
+  // Fetch voters on mount if electionId is available
+  useEffect(() => {
+    if (electionId) {
+      fetchVoters();
+    } else {
+      setError('Election ID is missing');
+      setTimeout(() => setError(''), 2000);
+    }
+  }, [electionId]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.voterId) {
       setError('Voter ID is required');
       setTimeout(() => setError(''), 2000);
       return;
     }
+    if (!electionId) {
+      setError('Election ID is missing');
+      setTimeout(() => setError(''), 2000);
+      return;
+    }
 
-    // Log form data (replace with API call if needed)
-    console.log('Voter ID:', formData.voterId);
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        setError('Please log in to add voters');
+        setTimeout(() => setError(''), 2000);
+        return;
+      }
+      const response = await api.patch(
+        `${server}/elections/${electionId}/voters`,
+        { voters: [parseInt(formData.voterId)] },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    // Navigate to admin dashboard
-    navigate(`/admin/${id}`);
+      if (response.status === 200) {
+        setVoters(response.data.data.voters || []);
+        setFormData({ ...formData, voterId: '' }); // Clear voterId input
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to add voter');
+      setTimeout(() => setError(''), 2000);
+    }
   };
 
   const handleBack = () => {
-    navigate(`/admin/${id}`);
+    navigate(`/admin/${id}/election/${electionId || ''}`);
   };
 
   return (
@@ -78,6 +132,20 @@ function AddVoters() {
             </button>
           </div>
         </form>
+        <div className="w-full mt-8">
+          <h2 className="text-3xl font-bold text-white mb-4">Eligible Voters</h2>
+          {voters.length > 0 ? (
+            <ul className="bg-gray-800 p-4 rounded-md">
+              {voters.map((voterId) => (
+                <li key={voterId} className="text-white text-lg py-1">
+                  {voterId}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-white text-lg">No voters added yet.</p>
+          )}
+        </div>
       </div>
     </div>
   );

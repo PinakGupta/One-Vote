@@ -3,6 +3,7 @@ import { Election } from '../models/election.model';
 import { Candidate } from '../models/candidate.model';
 import { ApiResponse, ApiError } from '../utils/handlers';
 import { uploadOnCloudinary } from '../utils/cloudinary.util';
+import mongoose from 'mongoose';
 
 export const createElection = async (req: Request, res: Response) => {
     try {
@@ -32,7 +33,7 @@ export const createElection = async (req: Request, res: Response) => {
 
 export const getElection = async (req: Request, res: Response) => {
     try {
-        const election = await Election.findById(req.params.electionId);
+        const election = await Election.findOne({electionId:req.params.electionId});
         if (!election) throw new ApiError(404, 'Election not found');
         return ApiResponse(res, 200, 'Election details', election);
     } catch (error: any) {
@@ -40,27 +41,72 @@ export const getElection = async (req: Request, res: Response) => {
     }
 };
 
+// export const addVoters = async (req: Request, res: Response) => {
+//     try {
+//         const { voters } = req.body;
+        
+//         if (!voters || !Array.isArray(voters)) {
+//             throw new ApiError(400, 'Voters array is required');
+//         }
+        
+//         const election = await Election.findByIdAndUpdate(
+//             req.params.electionId,
+//             { $addToSet: { voters: { $each: voters.map((v: string) => parseInt(v)) } } },
+//             { new: true }
+//         );
+        
+//         if (!election) throw new ApiError(404, 'Election not found');
+        
+//         return ApiResponse(res, 200, 'Voters added successfully', election);
+//     } catch (error: any) {
+//         throw new ApiError(error.statusCode || 500, error.message);
+//     }
+// };
+
 export const addVoters = async (req: Request, res: Response) => {
     try {
-        const { voters } = req.body;
-        
-        if (!voters || !Array.isArray(voters)) {
-            throw new ApiError(400, 'Voters array is required');
+      const { voters } = req.body;
+  
+      // 1. Validate input is an array
+      if (!voters || !Array.isArray(voters)) {
+        throw new ApiError(400, 'Voters array is required');
+      }
+  
+      // 2. Parse each voter ID to a number safely
+      const parsedVoters = voters.map((v: string) => {
+        const id = parseInt(v, 10); // always specify radix to avoid unexpected bases :contentReference[oaicite:6]{index=6}
+        if (isNaN(id)) {
+          throw new ApiError(400, `Invalid voter ID: ${v}`);
         }
-        
-        const election = await Election.findByIdAndUpdate(
-            req.params.electionId,
-            { $addToSet: { voters: { $each: voters.map((v: string) => parseInt(v)) } } },
-            { new: true }
-        );
-        
-        if (!election) throw new ApiError(404, 'Election not found');
-        
-        return ApiResponse(res, 200, 'Voters added successfully', election);
+        return id;
+      });
+  
+      // 3. Find by custom electionId and add unique voters
+      const election = await Election.findOneAndUpdate(
+        { electionId: req.params.electionId },      // query by custom field :contentReference[oaicite:7]{index=7}
+        {
+          $addToSet: {
+            voters: { $each: parsedVoters }           // use $each with $addToSet for bulk unique inserts :contentReference[oaicite:8]{index=8}
+          }
+        },
+        {
+          new: true,                                  // return the updated document :contentReference[oaicite:9]{index=9}
+          runValidators: true                         // enable schema validation on update :contentReference[oaicite:10]{index=10}
+        }
+      );
+  
+      // 4. Handle case where no such election exists
+      if (!election) {
+        throw new ApiError(404, 'Election not found');
+      }
+  
+      // 5. Respond with updated election
+      return ApiResponse(res, 200, 'Voters added successfully', election);
     } catch (error: any) {
-        throw new ApiError(error.statusCode || 500, error.message);
+      throw new ApiError(error.statusCode || 500, error.message);
     }
-};
+  };
+  
 
 export const toggleResultsVisibility = async (req: Request, res: Response) => {
     try {
