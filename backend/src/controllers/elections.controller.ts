@@ -1,19 +1,16 @@
 import { Request, Response } from 'express';
 import { Election } from '../models/election.model';
 import { Candidate } from '../models/candidate.model';
-import { Admin } from '../models/admin.model';
-import { User } from '../models/user.model';
 import { ApiResponse, ApiError } from '../utils/handlers';
 import { uploadOnCloudinary } from '../utils/cloudinary.util';
-import mongoose from 'mongoose';
 
 export const createElection = async (req: Request, res: Response) => {
     try {
         const admin = req.data;
-        const { name, electionId, voters } = req.body;
+        const { name, electionId } = req.body;
 
-        if (!name || !electionId || !voters) {
-            throw new ApiError(400, 'Missing required fields');
+        if (!name || !electionId) {
+            throw new ApiError(400, 'Election name and ID are required');
         }
 
         const existingElection = await Election.findOne({ electionId });
@@ -24,8 +21,7 @@ export const createElection = async (req: Request, res: Response) => {
         const election = await Election.create({
             admin: admin._id,
             name,
-            electionId,
-            voters: voters.map((v: string) => parseInt(v))
+            electionId
         });
 
         return ApiResponse(res, 201, 'Election created successfully', election);
@@ -46,11 +42,20 @@ export const getElection = async (req: Request, res: Response) => {
 
 export const addVoters = async (req: Request, res: Response) => {
     try {
+        const { voters } = req.body;
+        
+        if (!voters || !Array.isArray(voters)) {
+            throw new ApiError(400, 'Voters array is required');
+        }
+        
         const election = await Election.findByIdAndUpdate(
             req.params.electionId,
-            { $addToSet: { voters: { $each: req.body.voters } } },
+            { $addToSet: { voters: { $each: voters.map((v: string) => parseInt(v)) } } },
             { new: true }
         );
+        
+        if (!election) throw new ApiError(404, 'Election not found');
+        
         return ApiResponse(res, 200, 'Voters added successfully', election);
     } catch (error: any) {
         throw new ApiError(error.statusCode || 500, error.message);
@@ -64,6 +69,9 @@ export const toggleResultsVisibility = async (req: Request, res: Response) => {
             { showResults: req.body.showResults },
             { new: true }
         );
+        
+        if (!election) throw new ApiError(404, 'Election not found');
+        
         return ApiResponse(res, 200, 'Results visibility updated', election);
     } catch (error: any) {
         throw new ApiError(error.statusCode || 500, error.message);
@@ -79,6 +87,7 @@ export const getElectionResults = async (req: Request, res: Response) => {
             });
         
         if (!election) throw new ApiError(404, 'Election not found');
+        
         return ApiResponse(res, 200, 'Election results', election);
     } catch (error: any) {
         throw new ApiError(error.statusCode || 500, error.message);
@@ -89,7 +98,10 @@ export const getElectionCandidates = async (req: Request, res: Response) => {
     try {
         const election = await Election.findById(req.params.electionId)
             .populate('candidates');
-        return ApiResponse(res, 200, 'Election candidates', election?.candidates);
+            
+        if (!election) throw new ApiError(404, 'Election not found');
+        
+        return ApiResponse(res, 200, 'Election candidates', election.candidates);
     } catch (error: any) {
         throw new ApiError(error.statusCode || 500, error.message);
     }
@@ -146,6 +158,8 @@ export const voteCandidate = async (req: Request, res: Response) => {
             { $inc: { votesCount: 1 } },
             { new: true }
         );
+        
+        if (!candidate) throw new ApiError(404, 'Candidate not found');
 
         // Record vote
         election.votedUsers.push(user.uniqueId);
