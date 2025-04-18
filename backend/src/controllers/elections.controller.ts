@@ -20,9 +20,10 @@ export const createElection = async (req: Request, res: Response) => {
         const election = await Election.create({
             admin: admin,
             name,
-            electionId
+            electionId,
         });
 
+        // Return the complete election object for frontend use
         return ApiResponse(res, 201, 'Election created successfully', election);
     } catch (error: any) {
         throw new ApiError(error.statusCode || 500, error.message);

@@ -42,9 +42,14 @@ function CreateElectionForm() {
         }
       );
 
-      if (response.status === 201) {
-        navigate(`/admin/${id}`);
+      if (response.data && response.data.data) {
+        // Get the election ID from the response
+        const createdElection = response.data.data;
+        
+        // Redirect to the specific election page
+        navigate(`/admin/${id}/election/${createdElection.electionId}`);
       }
+      
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create election');
       setTimeout(() => setError(''), 2000);
