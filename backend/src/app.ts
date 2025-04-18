@@ -10,6 +10,7 @@ import users from "./routes/users.routes"
 import query from "./routes/query.routes"
 import cors from "cors"
 import env from './utils/env';
+import elections from './routes/elections.routes';
 
 const app = express()
 app.use(express.json())
@@ -28,6 +29,9 @@ app.use(cookieParser())
 // GET details routes
 app.use('/api/v1/admin', getDetails)
 app.use('/api/v1/api/districts-and-states', getDetails)
+
+// election routes
+app.use('/api/v1/elections', elections);
 
 //Login routes
 app.use('/api/v1/auth', loginRegister)
