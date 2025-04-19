@@ -1,15 +1,12 @@
-
 import Login from "./Components/Login";
 import ForgetPass from "./Components/ForgetPass";
 import Register from "./Components/Register";
 import Home from "./Home/Home";
 import Profile from "./Components/Profile";
-import React from "react";
-import { useState, useEffect } from "react";
-import { userContext } from "./context.js";
+import React, { useState, useEffect } from "react";
+import { userContext, candidateContext } from "./context.js";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NewPass from "./Components/NewPass";
-import { candidateContext } from "./context.js";
 import CandidateList from "./Components/CandidateList.jsx";
 import SpecificCandidate from "./Components/SpecificCandidate.jsx";
 import { Provider } from "react-redux";
@@ -30,8 +27,7 @@ import RoleSelector from "./Components/RoleSelector.jsx";
 import ElectionCreation from "./Components/Admin/ElectionCreation.jsx";
 import CreateElectionForm from "./Components/Admin/CreateElectionForm.jsx";
 import AddVoters from "./Components/Admin/AddVoters.jsx";
-import ElectionIdForm from "./Components/ElectionIdForm.jsx"; // Import the new component
-import ViewCandidateDetails from "./Components/Admin/ViewCandidateDetails.jsx";
+import ElectionIdForm from "./Components/ElectionIdForm.jsx";
 import ElectionResultIdForm from "./Components/ElectionResultIdForm.jsx";
 
 function App() {
@@ -64,126 +60,121 @@ function App() {
   };
 
   return (
-    <>
-      <BrowserRouter>
-        <Provider store={store}>
-          <userContext.Provider
-            value={{
-              visitorType,
-              changeVisitorType,
-              visitorId,
-              updateVisitorId,
-              userData,
-              updateUserData,
-            }}
-          >
-            <candidateContext.Provider value={{ candidateId, updateCandidateId }}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/role-selector" element={<RoleSelector />} />
-                <Route path="/api/v1/auth/login" element={<Login />} />
-                <Route path="/:id" element={<Home />} />
-                <Route path="/api/v1/auth/register" element={<Register />} />
+    <BrowserRouter>
+      <Provider store={store}>
+        <userContext.Provider
+          value={{
+            visitorType,
+            changeVisitorType,
+            visitorId,
+            updateVisitorId,
+            userData,
+            updateUserData,
+          }}
+        >
+          <candidateContext.Provider value={{ candidateId, updateCandidateId }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/role-selector" element={<RoleSelector />} />
+              <Route path="/api/v1/auth/login" element={<Login />} />
+              <Route path="/:id" element={<Home />} />
+              <Route path="/api/v1/auth/register" element={<Register />} />
+              <Route
+                path="/api/v1/auth/login/forget-password"
+                element={<ForgetPass />}
+              />
+              <Route
+                path="/api/v1/auth/login/forget-password/create-new-password/:id"
+                element={<NewPass />}
+              />
+              {/* Route for Election ID form */}
+              <Route
+                path="/:id/api/v1/candidates/enter-election"
+                element={<ElectionIdForm />}
+              />
+              {/* Updated CandidateList route to include electionId */}
+              <Route
+ bikini                path="/:id/api/v1/candidates/:electionId/candidate-list"
+                element={<CandidateList />}
+              />
+              <Route
+                path="/:id/declare-result"
+                element={<UserVoteResults />}
+              />
+              <Route
+                path="/:id/enter-result"
+                element={<ElectionResultIdForm />}
+              />
+              <Route
+                path="/:id/api/v1/candidates/candidate-list/:electionId/:id"
+                element={<SpecificCandidate />}
+              />
+              <Route
+                path="/:id/api/v1/user/profile"
+                element={<Profile />}
+              />
+              <Route
+                path="/:id/api/v1/user/profile/update"
+                element={<ProfileUpdate />}
+              />
+              <Route
+                path="/:id/api/v1/user/profile/update/password"
+                element={<UpdatePassword />}
+              />
+              <Route
+                path="/admin/:id/election"
+                element={<ElectionCreation />}
+              />
+              <Route
+                path="/admin/:id/create-election"
+                element={<CreateElectionForm />}
+              />
+              <Route
+                path="/admin/:id/election/:electionId/add-voters"
+                element={<AddVoters />}
+              />
+              <Route
+                path="/admin/:id/election/:electionId"
+                element={<AdminHome />}
+              />
+              <Route
+                path="/admin/:id/election/:electionId/add-candidate/"
+                element={<AddCandidate />}
+              />
+              <Route
+                path="/admin/:id/election/:electionId/view-candidates"
+                element={<ViewCandidates />}
+              >
                 <Route
-                  path="/api/v1/auth/login/forget-password"
-                  element={<ForgetPass />}
+                  path="candidate/:candidateId"
+                  element={<CandidateDetails />}
                 />
-                <Route
-                  path="/api/v1/auth/login/forget-password/create-new-password/:id"
-                  element={<NewPass />}
-                />
-                {/* New route for Election ID form */}
-                <Route
-                  path="/:id/api/v1/candidates/enter-election"
-                  element={<ElectionIdForm />}
-                />
-                {/* Updated CandidateList route to include electionId */}
-                <Route
-                  path="/:id/api/v1/candidates/candidate-list"
-                  element={<CandidateList />}
-                />
-                <Route
-                  path="/:id/declare-result"
-                  element={<UserVoteResults />}
-                />
-                <Route
-                   path="/:id/enter-result"
-                   element={<ElectionResultIdForm />}
-                 />
-                <Route
-                  path="/:id/api/v1/candidates/candidate-list/:electionId/:id"
-                  element={<SpecificCandidate />}
-                />
-                <Route
-                  path="/:id/api/v1/user/profile"
-                  element={<Profile />}
-                />
-                <Route
-                  path="/:id/api/v1/user/profile/update"
-                  element={<ProfileUpdate />}
-                />
-                <Route
-                  path="/:id/api/v1/user/profile/update/password"
-                  element={<UpdatePassword />}
-                />
-                <Route
-                  path="/admin/:id/election"
-                  element={<ElectionCreation />}
-                />
-                <Route
-                  path="/admin/:id/create-election"
-                  element={<CreateElectionForm />}
-                />
-                <Route
-                  path="/admin/:id/election/:electionId/add-voters"
-                  element={<AddVoters />}
-                />
-                <Route
-                  path="/admin/:id/election/:electionId"
-                  element={<AdminHome />}
-                />
-                <Route
-                  path="/admin/:adminId/election/:electionId/add-candidate/"
-                  element={<AddCandidate />}
-                />
-                <Route
-                  path="/admin/:adminId/election/:electionId/view-candidates"
-                  element={<ViewCandidates />}
-                />
-                <Route
-                  path="/admin/:adminId/election/:electionId/candidate/:candidateId"
-                  element={< ViewCandidateDetails/>}
-                />
-                  <Route
-                    path="candidate/:candidateId"
-                    element={<CandidateDetails />}
-                  />
-                <Route
-                  path="/admin/:id/election/:electionId/delete-candidate"
-                  element={<DeleteCandidate />}
-                />
-                <Route
-                  path="/admin/:id/election/:electionId/update-candidate"
-                  element={<UpdateCandidate />}
-                />
-                <Route
-                  path="/admin/:id/election/:electionId/view-count"
-                  element={<ViewVoteCount />}
-                />
-                <Route
-                  path="/admin/update-candidate/:candidateId"
-                  element={<UpdateCandidateForm />}
-                />
-                <Route
-                  path="/admin/:id/election/:electionId/results-toggler"
-                  element={<AdminResultsToggle />}
-                />
-              </Routes>
-            </candidateContext.Provider>
-          </userContext.Provider>
-        </Provider>
-      </BrowserRouter>
-    </>
+              </Route>
+              <Route
+                path="/admin/:id/election/:electionId/delete-candidate"
+                element={<DeleteCandidate />}
+              />
+              <Route
+                path="/admin/:id/election/:electionId/update-candidate"
+                element={<UpdateCandidate />}
+              />
+              <Route
+                path="/admin/:id/election/:electionId/view-count"
+                element={<ViewVoteCount />}
+              />
+              <Route
+                path="/admin/update-candidate/:candidateId"
+                element={<UpdateCandidateForm />}
+              />
+              <Route
+                path="/admin/:id/election/:electionId/results-toggler"
+                element={<AdminResultsToggle />}
+              />
+            </Routes>
+          </candidateContext.Provider>
+        </userContext.Provider>
+      </Provider>
+    </BrowserRouter>
   );
 }
 
