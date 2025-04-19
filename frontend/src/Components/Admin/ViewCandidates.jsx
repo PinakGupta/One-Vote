@@ -10,24 +10,23 @@ function ViewCandidates() {
     const { visitorType } = useContext(userContext);
     const [candidates, setCandidates] = useState([]);
     const [error, setError] = useState("");
-    const [expandedPromises, setExpandedPromises] = useState({});
-    const { id } = useParams(); // Election ID
+    const { adminId, electionId } = useParams();
 
     useEffect(() => {
-        if (id) {
+        if (electionId) {
             fetchCandidates();
         }
-    }, [id]);
+    }, [electionId]);
 
     const fetchCandidates = async () => {
         try {
             const token = localStorage.getItem("accessToken");
-            const response = await api.get(`${server}/candidates/candidate-list`, {
+            const response = await api.get(`${server}/candidates/candidate-list/${adminId}/${electionId}/view-candidates`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setCandidates(response.data.data);
+            setCandidates(response.data.data.candidates || []);
         } catch (err) {
             setError(err.response?.data?.message || "Failed to fetch candidates");
         }
@@ -39,13 +38,6 @@ function ViewCandidates() {
             return () => clearTimeout(timer);
         }
     }, [error]);
-
-    const togglePromises = (candidateId) => {
-        setExpandedPromises(prev => ({
-            ...prev,
-            [candidateId]: !prev[candidateId]
-        }));
-    };
 
     const formatDate = (dateString) => {
         try {
@@ -64,7 +56,7 @@ function ViewCandidates() {
                         <p className="text-gray-400 mt-3 text-xl">Comprehensive list of all registered election candidates</p>
                     </div>
                     <Link
-                        to={`/admin/${id}`}
+                        to={`/admin/election/${electionId}`}
                         state={{ visitorType }}
                         className="inline-block px-8 py-3 border-2 border-[#0099ff] text-[#0099ff] rounded-lg text-lg font-medium hover:bg-[#0099ff] hover:text-white transition-colors"
                     >
@@ -91,7 +83,7 @@ function ViewCandidates() {
                                         <th className="px-10 py-6 text-left text-xl font-semibold">Profile</th>
                                         <th className="px-10 py-6 text-left text-xl font-semibold">Details</th>
                                         <th className="px-10 py-6 text-left text-xl font-semibold">Location</th>
-                                        <th className="px-10 py-6 text-left text-xl font-semibold">Promises</th>
+                                        <th className="px-10 py-6 text-left text-xl font-semibold">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -133,10 +125,6 @@ function ViewCandidates() {
                                                             {candidate.candidateType}
                                                         </span>
                                                     </p>
-                                                    <p className="text-lg">
-                                                        <span className="text-gray-400">Votes:</span>{" "}
-                                                        <span className="text-[#0099ff] font-medium">{candidate.votesCount}</span>
-                                                    </p>
                                                 </div>
                                             </td>
 
@@ -152,30 +140,14 @@ function ViewCandidates() {
                                                 </div>
                                             </td>
 
-                                            {/* Promises Column */}
+                                            {/* Actions Column */}
                                             <td className="px-10 py-8">
-                                                <div>
-                                                    <button 
-                                                        onClick={() => togglePromises(candidate._id)}
-                                                        className="text-[#0099ff] hover:text-[#0077cc] underline text-lg flex items-center gap-2"
-                                                    >
-                                                        {expandedPromises[candidate._id] ? (
-                                                            <>Hide Promises <span>↑</span></>
-                                                        ) : (
-                                                            <>View Promises <span>↓</span></>
-                                                        )}
-                                                    </button>
-                                                    
-                                                    {expandedPromises[candidate._id] && (
-                                                        <div className="mt-4 bg-[#252525] p-5 rounded-lg max-h-64 overflow-y-auto">
-                                                            <ul className="list-disc pl-6 space-y-3">
-                                                                {candidate.promise.map((promise, i) => (
-                                                                    <li key={i} className="text-base text-gray-300">{promise}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                                <Link
+                                                    to={`/admin/${adminId}/election/${electionId}/candidate/${candidate._id}`}
+                                                    className="inline-block px-6 py-3 bg-[#5800FF] text-white rounded-lg hover:bg-[#4600cc] transition-colors text-center"
+                                                >
+                                                    View Details
+                                                </Link>
                                             </td>
                                         </tr>
                                     ))}
