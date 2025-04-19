@@ -127,9 +127,9 @@ const ElectionResult = () => {
               </div>
               <div className="flex flex-col items-center md:items-end">
                 <div className="text-4xl font-bold text-white mb-2">{winner.votesCount}</div>
-                <div className="text-lg text-yellow-400">
+                {/* <div className="text-lg text-yellow-400">
                   {(winner.percentage || 0).toFixed(1)}% of total votes
-                </div>
+                </div> */}
               </div>
             </div>
           </motion.div>
