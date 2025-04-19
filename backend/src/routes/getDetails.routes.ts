@@ -4,10 +4,11 @@
 import { Router } from 'express'
 import { getAdminDetails, getElectionsByAdmin } from "../controllers/getAdminData.controller"
 import { getStateDistrictsData } from "../controllers/getStateDistrict.controller"
-import { getCandidate, getSpecificCandidate } from '../controllers/candidates.controller'
+import {  getCandidate, getSpecificCandidate } from '../controllers/candidates.controller'
 import { verifyJwt } from '../middlewares/auth.middleware'
 import { voteCandidate } from '../controllers/users.controller'
 import { getCandidateVoteCount,toggleResultsVisibility,getResultsVisibility, getCandidatesByElection  } from '../controllers/getCandidateVoteCount.controller'
+import { deleteCandidate } from '../controllers/elections.controller'
 const router = Router()
 
 // GET admin Data
@@ -17,7 +18,7 @@ router.route('/view-count').get(verifyJwt,getCandidateVoteCount);
 
 // New route to get candidates by electionId
 router.route('/election/:electionId/candidates').get(getCandidatesByElection);
-
+router.route('/election/:electionId/candidates/:candidateId').delete(deleteCandidate);
 router.route('/:id/toggle-results').patch(verifyJwt,toggleResultsVisibility);
 router.route('/results-visibility').get(getResultsVisibility);
 router.route('/:adminId/get-elections').get(getElectionsByAdmin);

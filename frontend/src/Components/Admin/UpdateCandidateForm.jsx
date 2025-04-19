@@ -6,11 +6,12 @@ import axios from 'axios';
 import "../../Styles/AddCandidate.css";
 
 function UpdateCandidateForm() {
-    const { candidateId } = useParams();
+    const { id, electionId, candidateId } = useParams(); // id is adminId, electionId is custom string, candidateId is candidate ID
     const navigate = useNavigate();
     const [states, setStates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [toastMessage, setToastMessage] = useState(''); // State for toast message
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -120,7 +121,9 @@ function UpdateCandidateForm() {
                 }
             });
 
-            navigate('/admin/update-candidate');
+            // Show toast message instead of navigating
+            setToastMessage('Update done successfully');
+            setTimeout(() => setToastMessage(''), 3000); // Clear toast after 3 seconds
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to update candidate');
         }
@@ -139,6 +142,11 @@ function UpdateCandidateForm() {
                     {error && (
                         <div className="bg-red-900 border border-red-600 text-red-200 px-4 py-3 rounded mb-6">
                             {error}
+                        </div>
+                    )}
+                    {toastMessage && (
+                        <div className="bg-green-900 border border-green-600 text-green-200 px-4 py-3 rounded mb-6">
+                            {toastMessage}
                         </div>
                     )}
 
@@ -282,13 +290,7 @@ function UpdateCandidateForm() {
                         >
                             Update Candidate
                         </button>
-                        <button
-                            type="button"
-                            onClick={() => navigate('/admin/update-candidate')}
-                            className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                        >
-                            Cancel
-                        </button>
+                        
                     </div>
                 </form>
             </div>

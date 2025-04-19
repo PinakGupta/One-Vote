@@ -12,7 +12,7 @@ router.route('/:adminId/:electionId').post(
      addCandidate)
 router.route('/:adminId/:electionId/view-candidates').get(verifyJwt,isAdmin,getCandidates);
 router.route('/:adminId/:electionId/candidate/:candidateId').get(verifyJwt, isAdmin, getCandidateDetails);
-router.route('/:id').delete(verifyJwt, isAdmin, deleteCandidate)
+router.route('/:adminId/:electionId/delete-candidate').delete(verifyJwt, isAdmin, deleteCandidate)
 router.route('/:id').patch(verifyJwt, isAdmin, upload.single('avatar'), updateCandidate)
 
 
