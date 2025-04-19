@@ -111,7 +111,7 @@ function App() {
                    element={<ElectionResultIdForm />}
                  />
                 <Route
-                  path="/:id/api/v1/candidates/candidate-list/:electionId/:id"
+                  path="/:id/api/v1/candidates/candidate-list/:electionId/:candidateId"
                   element={<SpecificCandidate />}
                 />
                 <Route
