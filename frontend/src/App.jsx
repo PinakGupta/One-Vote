@@ -33,6 +33,7 @@ import AddVoters from "./Components/Admin/AddVoters.jsx";
 import ElectionIdForm from "./Components/ElectionIdForm.jsx"; // Import the new component
 import ViewCandidateDetails from "./Components/Admin/ViewCandidateDetails.jsx";
 import ElectionResultIdForm from "./Components/ElectionResultIdForm.jsx";
+import ElectionResult from "./Components/ElectionResult.jsx";
 
 function App() {
   useEffect(() => {
@@ -107,8 +108,12 @@ function App() {
                   element={<UserVoteResults />}
                 />
                 <Route
-                   path="/:id/enter-result"
+                   path="/:userId/enter-result"
                    element={<ElectionResultIdForm />}
+                 />
+                 <Route
+                   path="/:userId/api/v1/election/:electionId/result"
+                   element={<ElectionResult />}
                  />
                 <Route
                   path="/:id/api/v1/candidates/candidate-list/:electionId/:candidateId"

@@ -155,6 +155,7 @@ export const checkVoteStatus = async (req: Request, res: Response) => {
 };
 
 
+
 // Submit vote for a candidate
 export const submitVote = async (req: Request, res: Response) => {
   try {
@@ -345,19 +346,75 @@ export const toggleResultsVisibility = async (req: Request, res: Response) => {
 };
 
 export const getElectionResults = async (req: Request, res: Response) => {
-    try {
-        const election = await Election.findById(req.params.electionId)
-            .populate({
-                path: 'candidates',
-                select: 'firstName lastName votesCount avatar representative'
-            });
+  try {
+    const { userId, electionId } = req.params;
 
-        if (!election) throw new ApiError(404, 'Election not found');
-
-        return ApiResponse(res, 200, 'Election results', election);
-    } catch (error: any) {
-        throw new ApiError(error.statusCode || 500, error.message);
+    // Validate MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID format'
+      });
     }
+
+    // Find the election by electionId
+    const election = await Election.findOne({ electionId });
+
+    if (!election) {
+      return res.status(404).json({
+        success: false,
+        message: 'Election not found'
+      });
+    }
+
+    // Check if results are allowed to be shown
+    if (!election.showResults) {
+      return res.status(403).json({
+        success: false,
+        message: 'Results are not yet declared by admin',
+        isResultsAvailable: false
+      });
+    }
+
+    // Get candidates for this election with populated data
+    const candidates = await Candidate.find({ election: election._id })
+      .sort({ votesCount: -1 }) // Sort by vote count in descending order
+      .select('firstName lastName avatar representative town candidateType votesCount promise');
+
+    // Calculate total votes
+    const totalVotes = candidates.reduce((sum, candidate) => sum + (candidate.votesCount || 0), 0);
+
+    // Calculate vote percentage for each candidate
+    const candidatesWithPercentage = candidates.map(candidate => {
+      const percentage = totalVotes > 0 ? ((candidate.votesCount || 0) / totalVotes * 100).toFixed(2) : '0.00';
+      return {
+        ...candidate.toObject(),
+        percentage: parseFloat(percentage)
+      };
+    });
+
+    // Get winner (if there are candidates)
+    const winner = candidates.length > 0 ? candidates[0] : null;
+
+    return res.status(200).json({
+      success: true,
+      message: 'Election results fetched successfully',
+      data: {
+        election,
+        candidates: candidatesWithPercentage,
+        totalVotes,
+        winner,
+        isResultsAvailable: true
+      }
+    });
+  } catch (error: unknown) {
+    console.error('Error fetching election results:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch election results',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
 };
 
 export const getElectionCandidates = async (req: Request, res: Response) => {

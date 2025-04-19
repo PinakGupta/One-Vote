@@ -20,6 +20,9 @@ export default {
                     'max-md': { 'max': '768px' },   // Example for max-width of 768px (md breakpoint)
                     'max-sm': { 'max': '640px' },   // Example for max-width of 640px (sm breakpoint)
                },
+               animation: {
+                    'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                  },
           },
      },
      plugins: [],

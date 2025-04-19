@@ -25,6 +25,7 @@ router.post('/check-eligibility', checkEligibility);
 router.get('/check-vote-status/:userId/:electionId', checkVoteStatus);
 router.post('/vote', submitVote);
 router.patch('/:electionId/voters', addVoters);
+router.get('/:userId/:electionId/result', getElectionResults);
 router.patch('/:electionId/toggle-results', verifyJwt, isAdmin, toggleResultsVisibility);
 router.get('/:electionId/results', getElectionResults);
 router.get('/:electionId/candidates', verifyJwt, getElectionCandidates);
