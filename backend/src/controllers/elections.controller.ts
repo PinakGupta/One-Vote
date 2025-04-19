@@ -613,3 +613,45 @@ export const deleteCandidate = async (req: Request, res: Response) => {
         return ApiResponse(res, 500, 'Internal server error');
     }
 };
+
+// ... (existing imports and controllers remain unchanged)
+
+export const getElectionCandidateVoteCount = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { electionId } = req.params;
+
+        // Validate electionId
+        if (!electionId) {
+            throw new ApiError(400, 'Election ID is required');
+        }
+
+        // Find the election by custom electionId
+        const election = await Election.findOne({ electionId }).populate({
+            path: 'candidates',
+            select: 'firstName lastName votesCount avatar representative'
+        });
+
+        if (!election) {
+            throw new ApiError(404, 'Election not found');
+        }
+
+        // Map candidates to the required response format
+        const voteCounts = election.candidates.map((candidate: any) => ({
+            candidateId: candidate._id,
+            candidateName: `${candidate.firstName} ${candidate.lastName}`,
+            voteCount: candidate.votesCount || 0,
+            photoUrl: candidate.avatar || '',
+            partyName: candidate.representative || ''
+        }));
+
+        return ApiResponse(res, 200, 'Candidate vote counts retrieved successfully', voteCounts);
+    } catch (error: any) {
+        console.error('Error fetching election candidate vote counts:', error);
+        if (error instanceof ApiError) {
+            return ApiResponse(res, error.statusCode, error.message);
+        }
+        return ApiResponse(res, 500, 'Internal server error');
+    }
+};
+
+// ... (existing controllers like deleteCandidate, createElection, etc., remain unchanged)

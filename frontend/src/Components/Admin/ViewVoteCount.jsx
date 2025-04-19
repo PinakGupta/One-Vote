@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { server } from "../../server";
 
 const ViewVoteCount = () => {
-  const { id } = useParams();
+  const { id,electionId } = useParams();
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,16 +23,16 @@ const ViewVoteCount = () => {
       try {
         // console.log("Fetching data from:", `${server}/admin/${id}/view-count`);
 
-        const response = await axios.get(`${server}/admin/view-count`, {
+        const response = await axios.get(`${server}/admin/election/${electionId}/vote-count`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
 
-        console.log("API Response:", response.data);
+        console.log("API Response:", response.data.data);
 
-        if (Array.isArray(response.data)) {
-          setCandidates(response.data);
+        if (Array.isArray(response.data.data)) {
+          setCandidates(response.data.data);
         } else {
           setError("Invalid data format received.");
         }

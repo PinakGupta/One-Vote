@@ -8,13 +8,14 @@ import {  getCandidate, getSpecificCandidate } from '../controllers/candidates.c
 import { verifyJwt } from '../middlewares/auth.middleware'
 import { voteCandidate } from '../controllers/users.controller'
 import { getCandidateVoteCount,toggleResultsVisibility,getResultsVisibility, getCandidatesByElection  } from '../controllers/getCandidateVoteCount.controller'
-import { deleteCandidate } from '../controllers/elections.controller'
+import { deleteCandidate, getElectionCandidateVoteCount } from '../controllers/elections.controller'
 const router = Router()
 
 // GET admin Data
 router.route('/admin-data').get(getAdminDetails)
-router.route('/view-count').get(verifyJwt,getCandidateVoteCount);
+router.route('/view-count').get(getCandidateVoteCount);
 
+router.route('/election/:electionId/vote-count').get(getElectionCandidateVoteCount);
 
 // New route to get candidates by electionId
 router.route('/election/:electionId/candidates').get(getCandidatesByElection);
