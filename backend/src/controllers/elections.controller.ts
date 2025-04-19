@@ -329,19 +329,97 @@ export const addVoters = async (req: Request, res: Response) => {
     }
 };
 
+// export const toggleResultsVisibility = async (req: Request, res: Response) => {
+//     try {
+//         const election = await Election.findByIdAndUpdate(
+//             req.params.electionId,
+//             { showResults: req.body.showResults },
+//             { new: true }
+//         );
+
+//         if (!election) throw new ApiError(404, 'Election not found');
+
+//         return ApiResponse(res, 200, 'Results visibility updated', election);
+//     } catch (error: any) {
+//         throw new ApiError(error.statusCode || 500, error.message);
+//     }
+// };
+// ... (existing imports remain unchanged)
+
 export const toggleResultsVisibility = async (req: Request, res: Response) => {
     try {
-        const election = await Election.findByIdAndUpdate(
-            req.params.electionId,
-            { showResults: req.body.showResults },
+        const { electionId } = req.params;
+        const { showResults } = req.body;
+
+        // Validate electionId
+        if (!electionId) {
+            throw new ApiError(400, 'Election ID is required');
+        }
+
+        // Validate showResults
+        if (showResults === undefined || showResults === null) {
+            throw new ApiError(400, 'showResults is required');
+        }
+        if (typeof showResults !== 'boolean') {
+            throw new ApiError(400, 'showResults must be a boolean value');
+        }
+
+        // Find and update the election by custom electionId
+        const election = await Election.findOneAndUpdate(
+            { electionId },
+            { showResults },
             { new: true }
         );
 
-        if (!election) throw new ApiError(404, 'Election not found');
+        if (!election) {
+            throw new ApiError(404, 'Election not found');
+        }
 
-        return ApiResponse(res, 200, 'Results visibility updated', election);
+        return ApiResponse(
+            res,
+            200,
+            `Results visibility ${showResults ? 'enabled' : 'disabled'} successfully`,
+            { showResults: election.showResults }
+        );
     } catch (error: any) {
-        throw new ApiError(error.statusCode || 500, error.message);
+        console.error('Error toggling results visibility:', error);
+        // Prevent server crash by returning the error response
+        return ApiResponse(
+            res,
+            error.statusCode || 500,
+            error.message || 'Error toggling results visibility'
+        );
+    }
+};
+
+
+// ... (other controllers remain unchanged)
+
+export const getElectionResultsVisibility = async (req: Request, res: Response) => {
+    try {
+        const { electionId } = req.params;
+
+        // Validate electionId
+        if (!electionId) {
+            throw new ApiError(400, 'Election ID is required');
+        }
+
+        // Find the election by custom electionId
+        const election = await Election.findOne({ electionId }, 'showResults');
+        if (!election) {
+            throw new ApiError(404, 'Election not found');
+        }
+
+        return ApiResponse(res, 200, 'Results visibility fetched successfully', {
+            showResults: election.showResults
+        });
+    } catch (error: any) {
+        console.error('Error fetching results visibility:', error);
+        return ApiResponse(
+            res,
+            error.statusCode || 500,
+            error.message || 'Error fetching results visibility'
+        );
     }
 };
 
