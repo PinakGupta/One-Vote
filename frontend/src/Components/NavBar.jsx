@@ -343,7 +343,7 @@ const Navbar = () => {
                 
                 {visitorType === 'user' && (
                     <>
-                        <Button innerText="View Result" link="declare-result" />
+                        <Button innerText="View Result" link="enter-result" />
                         <Button innerText="Vote Now" link="api/v1/candidates/enter-election" />
                         <Button innerText="Logout" onClick={(e) => handleLogout(e)} />
                     </>
