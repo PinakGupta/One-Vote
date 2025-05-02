@@ -14,7 +14,7 @@ const resend = new Resend(`${env.RESEND_API_KEY}`);
 export const sendOtpEmail = async (email: string, otp: string): Promise<boolean> => {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'OneVote <verification@onevote.app>', // Update with your from address
+      from: 'OneVote <onboarding@resend.dev>', // Update with your from address
       to: [email],
       subject: 'OneVote - Email Verification OTP',
       html: `
