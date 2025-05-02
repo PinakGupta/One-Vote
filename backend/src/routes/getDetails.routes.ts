@@ -8,7 +8,8 @@ import {  getCandidate, getSpecificCandidate } from '../controllers/candidates.c
 import { verifyJwt } from '../middlewares/auth.middleware'
 import { voteCandidate } from '../controllers/users.controller'
 import { getCandidateVoteCount,getResultsVisibility, getCandidatesByElection  } from '../controllers/getCandidateVoteCount.controller'
-import { deleteCandidate, getElectionCandidateVoteCount, getElectionResultsVisibility, toggleResultsVisibility } from '../controllers/elections.controller'
+import { deleteCandidate, getElectionCandidateVoteCount, getElectionResultsVisibility, toggleResultsVisibility, updateCandidate } from '../controllers/elections.controller'
+import { upload } from '../middlewares/multer.middleware'
 const router = Router()
 
 // GET admin Data
@@ -25,6 +26,11 @@ router.route('/election/:electionId/results-visibility').get(getElectionResultsV
 router.route('/election/:electionId/candidates').get(getCandidatesByElection);
 router.route('/election/:electionId/candidates/:candidateId').delete(deleteCandidate);
 // router.route('/:id/toggle-results').patch(verifyJwt,toggleResultsVisibility);
+router.route('/election/:electionId/candidates/:candidateId').patch(
+    verifyJwt,
+    upload.single('avatar'), // Handle single file upload for avatar
+    updateCandidate
+  );
 router.route('/results-visibility').get(getResultsVisibility);
 router.route('/:adminId/get-elections').get(getElectionsByAdmin);
 

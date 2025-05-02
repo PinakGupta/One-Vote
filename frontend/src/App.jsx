@@ -176,7 +176,7 @@ function App() {
                   element={<ViewVoteCount />}
                 />
                 <Route
-                  path="/admin/update-candidate/:candidateId"
+                  path="/admin/:adminId/election/:electionId/candidate/:candidateId/update"
                   element={<UpdateCandidateForm />}
                 />
                 <Route

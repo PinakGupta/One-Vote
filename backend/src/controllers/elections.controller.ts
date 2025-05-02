@@ -637,3 +637,81 @@ export const getElectionCandidateVoteCount = async (req: Request, res: Response)
     return ApiResponse(res, 500, 'Internal server error');
   }
 };
+
+export const updateCandidate = async (req: Request, res: Response) => {
+  try {
+    const { electionId, candidateId } = req.params;
+    const { firstName, lastName, email, town, candidateType, dob, promise } = req.body;
+    const avatarPath = req.file?.path;
+
+    // Validate parameters
+    if (!electionId) {
+      throw new ApiError(400, 'Election ID is required');
+    }
+    if (!candidateId) {
+      throw new ApiError(400, 'Candidate ID is required');
+    }
+    if (!mongoose.Types.ObjectId.isValid(candidateId)) {
+      throw new ApiError(400, 'Invalid Candidate ID format');
+    }
+
+    // Find the election by custom electionId
+    const election = await Election.findOne({ electionId });
+    if (!election) {
+      throw new ApiError(404, 'Election not found');
+    }
+
+    // Find the candidate and verify it belongs to the election
+    const candidate = await Candidate.findOne({
+      _id: candidateId,
+      election: election._id,
+    });
+    if (!candidate) {
+      throw new ApiError(404, 'Candidate not found or not associated with this election');
+    }
+
+    // Prepare update object
+    const updateData: any = {};
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    if (email) updateData.email = email;
+    if (town) updateData.town = town;
+    if (candidateType) updateData.candidateType = candidateType;
+    if (dob) updateData.dob = new Date(dob);
+    if (promise) updateData.promise = Array.isArray(promise) ? promise : [promise];
+
+    // Handle avatar update
+    if (avatarPath) {
+      // Upload new avatar to Cloudinary
+      const avatar = await uploadOnCloudinary(avatarPath);
+      if (!avatar) {
+        throw new ApiError(400, 'Avatar upload failed');
+      }
+      updateData.avatar = avatar.url;
+
+      // Delete old avatar from Cloudinary (if it exists)
+      if (candidate.avatar) {
+        const deleteResult = await deleteFromCloudinary(candidate.avatar);
+        if (!deleteResult) {
+          console.warn('Failed to delete old avatar from Cloudinary, proceeding with update');
+        }
+      }
+    }
+
+    // Update candidate
+    const updatedCandidate = await Candidate.findByIdAndUpdate(
+      candidateId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCandidate) {
+      throw new ApiError(500, 'Failed to update candidate');
+    }
+
+    return ApiResponse(res, 200, 'Candidate updated successfully', updatedCandidate);
+  } catch (error: any) {
+    console.error('Error updating candidate:', error);
+    throw new ApiError(error.statusCode || 500, error.message || 'Internal server error');
+  }
+};

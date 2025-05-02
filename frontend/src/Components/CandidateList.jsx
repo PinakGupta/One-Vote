@@ -27,7 +27,8 @@ function CandidateList() {
           },
         }
       );
-      setCandidates(response.data.candidates || []);
+      console.log(response)
+      setCandidates(response.data.data.candidates || []);
     } catch (err) {
       setErr(err.response?.data?.message || err.message || "Error fetching candidates");
     }

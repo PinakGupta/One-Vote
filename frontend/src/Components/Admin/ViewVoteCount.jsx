@@ -64,7 +64,6 @@ const ViewVoteCount = () => {
               <tr style={{ backgroundColor: "rgb(84, 18, 238)" }} className="text-white text-3xl">
                 <th className="py-6 px-8">Photo</th>
                 <th className="py-6 px-8">Candidate Name</th>
-                <th className="py-6 px-8">Party Name</th>
                 <th className="py-6 px-8">Vote Count</th>
               </tr>
             </thead>
@@ -87,12 +86,7 @@ const ViewVoteCount = () => {
                     <td className="py-6 px-8 text-center text-3xl font-bold text-white">
                       {candidate.candidateName}
                     </td>
-                    <td
-                      className="py-6 px-8 text-center text-3xl font-bold"
-                      style={{ color: "rgb(84, 18, 238)" }}
-                    >
-                      {candidate.partyName}
-                    </td>
+                    
                     <td
                       className="py-6 px-8 text-center text-3xl font-bold"
                       style={{ color: "rgb(84, 18, 238)" }}
