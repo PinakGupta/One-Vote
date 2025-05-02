@@ -9,6 +9,7 @@ import candidates from "./routes/candidates.routes"
 import users from "./routes/users.routes"
 import query from "./routes/query.routes"
 import cors from "cors"
+import otpRoutes from "./routes/otp.routes" 
 import env from './utils/env';
 import elections from './routes/elections.routes';
 
@@ -35,6 +36,10 @@ app.use('/api/v1/elections', elections);
 
 //Login routes
 app.use('/api/v1/auth', loginRegister)
+
+// OTP verification routes
+app.use('/api/v1/otp', otpRoutes) // Add OTP routes
+
 
 //candidatelist routes
 app.use('/api/v1/candidates/candidate-list', getDetails)
