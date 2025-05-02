@@ -2,6 +2,7 @@
 import Login from "./Components/Login";
 import ForgetPass from "./Components/ForgetPass";
 import Register from "./Components/Register";
+import OTPVerification from "./Components/OTPVerification";
 import Home from "./Home/Home";
 import Profile from "./Components/Profile";
 import React from "react";
@@ -85,6 +86,8 @@ function App() {
                 <Route path="/api/v1/auth/login" element={<Login />} />
                 <Route path="/:id" element={<Home />} />
                 <Route path="/api/v1/auth/register" element={<Register />} />
+                {/* Add new route for OTP verification */}
+                <Route path="/api/v1/otp/verify" element={<OTPVerification />} />
                 <Route
                   path="/api/v1/auth/login/forget-password"
                   element={<ForgetPass />}
