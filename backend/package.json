@@ -7,7 +7,7 @@
    "scripts": {
       "dev": "nodemon index.server.js",
       "start": "node dist/index.server.js",
-      "build": "tsc --build"
+      "build": "npm install && npx tsc"
    },
    "keywords": [
       "backend",
