@@ -12,13 +12,9 @@ const userSchema: Schema = new Schema({
       type: String,
       required: true
    },
-   uniqueId: {
-      type: Number,
-      required: true
-   },
-   voterId: {
-      type: String,
-      required: true
+   email:{
+      type:String,
+      required:true
    },
    password: {
       type: String,
@@ -34,6 +30,9 @@ const userSchema: Schema = new Schema({
    isVoted: {
       type: Boolean,
       default: false
+   },
+   verified:{
+      type:Boolean
    }
 })
 

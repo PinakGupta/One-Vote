@@ -1,147 +1,210 @@
-import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.util"
-import { Candidate } from "../models/candidate.model"
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.util";
+import { Candidate } from "../models/candidate.model";
 import { User } from "../models/user.model";
-import bcrypt from "bcrypt"
+import { Election } from "../models/election.model";
+import bcrypt from "bcrypt";
 import { Updates } from "../utils/types.util";
 import { Response, Request } from "express";
 import { ApiError, ApiResponse } from "../utils/handlers";
+import mongoose, { HydratedDocument } from "mongoose";
+import { ElectionModel } from "../utils/types.util";
+
+// Explicitly type the Election document to ensure _id is mongoose.Types.ObjectId
+type ElectionDocument = HydratedDocument<ElectionModel> & { _id: mongoose.Types.ObjectId };
 
 export const getUser = async (req: Request, res: Response) => {
-   const currentUser = req.data
-   if (!currentUser) throw new ApiError(400, 'User is not authourized')
-   return ApiResponse(res, 200, 'User data fetched successfully', currentUser)
-}
+  try {
+    const currentUser = req.data;
+    if (!currentUser) throw new ApiError(400, 'User is not authorized');
+    return ApiResponse(res, 200, 'User data fetched successfully', currentUser);
+  } catch (error: any) {
+    console.error('Error fetching user:', error);
+    return ApiResponse(res, error.statusCode || 500, error.message || 'Internal server error', null, null, null, error);
+  }
+};
 
 export const updateUser = async (req: Request, res: Response) => {
-   const { firstName, lastName } = req.body
-   let updates: Updates = {}
+  try {
+    const { firstName, lastName } = req.body;
+    let updates: Updates = {};
 
-   const currentUser = req.data
+    const currentUser = req.data;
+    if (!currentUser) throw new ApiError(401, 'User is not authorized');
 
-   const avatarLocalPath = req.file?.path
+    const avatarLocalPath = req.file?.path;
 
-   if (avatarLocalPath) {
-      const alreadyHaveAvatar = currentUser.avatar
-      let uploadAvatar
-
-      uploadAvatar = await uploadOnCloudinary(avatarLocalPath)
-      updates.avatar = uploadAvatar.url
+    if (avatarLocalPath) {
+      const alreadyHaveAvatar = currentUser.avatar;
+      const uploadAvatar = await uploadOnCloudinary(avatarLocalPath);
+      if (!uploadAvatar?.url) throw new ApiError(500, 'Failed to upload avatar');
+      updates.avatar = uploadAvatar.url;
 
       if (alreadyHaveAvatar) {
-         const deleteFile = await deleteFromCloudinary(alreadyHaveAvatar)
-         if (!deleteFile) throw new ApiError(400, 'Not found the file')
+        const deleteFile = await deleteFromCloudinary(alreadyHaveAvatar);
+        if (!deleteFile) throw new ApiError(400, 'Avatar file not found');
       }
-   }
+    }
 
-   if (firstName) {
-      updates.firstName = firstName;
-   }
+    if (firstName) updates.firstName = firstName;
+    if (lastName) updates.lastName = lastName;
 
-   if (lastName) {
-      updates.lastName = lastName;
-   }
-   const user = await User.findByIdAndUpdate(
-      req.data?._id,
-      {
-         $set: updates
+    const user = await User.findByIdAndUpdate(
+      currentUser._id,
+      { $set: updates },
+      { new: true }
+    ).select("-password -role");
 
-      },
-      {
-         new: true
-      }
-   ).select("-password -role")
+    if (!user) throw new ApiError(404, 'User not found');
 
-   return ApiResponse(res, 200, 'Data fetched successfully', user)
-}
-
+    return ApiResponse(res, 200, 'User updated successfully', user);
+  } catch (error: any) {
+    console.error('Error updating user:', error);
+    return ApiResponse(res, error.statusCode || 500, error.message || 'Internal server error', null, null, null, error);
+  }
+};
 
 export const updateUserPassword = async (req: Request, res: Response) => {
-   const { ...rest } = req.body
-   let newHashedPassword
-   let currentUser = req.data
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    const currentUser = req.data;
+    if (!currentUser) throw new ApiError(401, 'User is not authorized');
 
-   if (!rest.currentPassword || !rest.newPassword || !rest.confirmNewPassword) throw new ApiError(400, 'Invalid credentials')
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      throw new ApiError(400, 'Current password, new password, and confirm new password are required');
+    }
 
-   for (const i in rest) {
-      const value = rest[i]
+    // Validate non-empty fields
+    for (const value of [currentPassword, newPassword, confirmNewPassword]) {
       if (typeof value === 'string' && value.trim().length === 0) {
-         throw new ApiError(400, 'Required fields are mandatory')
+        throw new ApiError(400, 'Required fields cannot be empty');
       }
-   }
-   const isPassCorrect = await bcrypt.compare(rest.currentPassword, currentUser.password)
-   if (!isPassCorrect) throw new ApiError(400, "Password is incorrect")
+    }
 
-   if (rest.newPassword === rest.currentPassword) throw new ApiError(400, 'New password cannot be set as old password')
+    const isPassCorrect = await bcrypt.compare(currentPassword, currentUser.password);
+    if (!isPassCorrect) throw new ApiError(400, 'Current password is incorrect');
 
-   if (!rest.newPassword === rest.confirmNewPassword) throw new ApiError(400, 'Password does not match')
-   newHashedPassword = await bcrypt.hash(rest.newPassword, 10)
+    if (newPassword === currentPassword) {
+      throw new ApiError(400, 'New password cannot be the same as the current password');
+    }
 
-   const updatedUserPass = await User.findByIdAndUpdate(
-      req.data?._id,
-      {
-         password: newHashedPassword
+    if (newPassword !== confirmNewPassword) {
+      throw new ApiError(400, 'New password and confirm password do not match');
+    }
 
-      },
-      {
-         new: true
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      currentUser._id,
+      { password: newHashedPassword },
+      { new: true }
+    ).select("-password -role");
+
+    if (!updatedUser) throw new ApiError(404, 'User not found');
+
+    return ApiResponse(res, 200, 'Password updated successfully', updatedUser);
+  } catch (error: any) {
+    console.error('Error updating user password:', error);
+    return ApiResponse(res, error.statusCode || 500, error.message || 'Internal server error', null, null, null, error);
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const currentUser = req.data;
+    if (!currentUser) throw new ApiError(401, 'User verification failed');
+
+    // Delete the avatar from Cloudinary if it exists
+    if (currentUser.avatar) {
+      const deleteResult = await deleteFromCloudinary(currentUser.avatar);
+      if (!deleteResult) {
+        console.warn('Failed to delete avatar from Cloudinary, proceeding with user deletion');
       }
-   ).select("-password -role")
+    }
 
-   return ApiResponse(res, 200, 'Password updated successfully', updatedUserPass)
-}
+    // Delete the user from the database
+    const deletedUser = await User.findByIdAndDelete(currentUser._id);
+    if (!deletedUser) throw new ApiError(404, 'User not found');
 
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true
+    };
 
-
-// this functionality is not done in frontend
-// export const deleteUser = async (req, res) => {
-//      const currentUser = req.data
-//      if (!currentUser) throw new ApiError(400, 'Verification of user failed')
-//      // delete the avatar
-//      await deleteFromCloudinary(currentUser.avatar)
-//      await User.findByIdAndDelete(currentUser._id)
-//      const options = {
-//           httpOnly: true,
-//           secure: true
-//      }
-//      return res
-//           .status(200)
-//           .clearCookie("accessToken", options)
-//           .clearCookie("refreshToken", options)
-//           .json(new handleResponse(
-//                200,
-//                "User deleted successfully",
-//                {}
-//           ))
-// })
-
+    // Clear multiple cookies using removeCookies
+    return ApiResponse(
+      res,
+      200,
+      'User deleted successfully',
+      null,
+      null,
+      { tokenName: 'accessToken', options: cookieOptions },
+      null
+    ).clearCookie('refreshToken', cookieOptions);
+  } catch (error: any) {
+    console.error('Error deleting user:', error);
+    return ApiResponse(res, error.statusCode || 500, error.message || 'Internal server error', null, null, null, error);
+  }
+};
 
 export const voteCandidate = async (req: Request, res: Response) => {
-   try {
+  try {
+    const currentUser = req.data;
+    if (!currentUser) throw new ApiError(401, 'User is not authorized');
 
-      const currentUser = req.data
-      console.log(currentUser)
-      console.log(currentUser.isVoted)
-      if (currentUser.isVoted) throw new ApiError(400, 'User Already Voted')
-      const { id } = req.params
-      console.log(id)
-      if (!id) throw new ApiError(400, 'Candidate does not exist')
+    const { id, electionId } = req.params;
+    if (!id) throw new ApiError(400, 'Candidate ID is required');
+    if (!electionId) throw new ApiError(400, 'Election ID is required');
 
-      const candidateData = await Candidate.findById({_id:id});
-      if (!candidateData) throw new ApiError(400, "Candidate not found")
+    // Validate MongoDB ObjectId for candidate
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new ApiError(400, 'Invalid candidate ID format');
+    }
 
-      candidateData.votedUsers = candidateData.votedUsers || []
-      candidateData.votedUsers.push(currentUser._id)
-      
-      candidateData.votesCount = (candidateData.votesCount || 0) + 1
-      
-      await candidateData.save()
+    // Find the election with explicit typing
+    const election: ElectionDocument | null = await Election.findOne({ electionId });
+    if (!election) throw new ApiError(404, 'Election not found');
 
-      currentUser.isVoted = true
-      await currentUser.save()
+    // Check if user is eligible to vote
+    if (!election.voters.includes(currentUser.email)) {
+      throw new ApiError(403, 'User is not eligible to vote in this election');
+    }
 
-      return ApiResponse(res, 200, 'Thanks for voting, Your submission recorded successfully', currentUser)
+    // Check if user has already voted
+    if (election.votedUsers.includes(currentUser.email) || currentUser.isVoted) {
+      throw new ApiError(400, 'User has already voted');
+    }
 
-   } catch (error: any) {
-      throw new ApiError(error.statusCode || 500, error.message || 'Server is under maintainence')
-   }
-}
+    // Find the candidate
+    const candidate = await Candidate.findById(id);
+    if (!candidate) throw new ApiError(404, 'Candidate not found');
+
+    // Verify candidate belongs to the election
+    if (candidate.election.toString() !== election._id.toString()) {
+      throw new ApiError(400, 'Candidate is not associated with this election');
+    }
+
+    // Update candidate's vote count and votedUsers
+    candidate.votedUsers = candidate.votedUsers || [];
+    candidate.votedUsers.push(currentUser._id);
+    candidate.votesCount = (candidate.votesCount || 0) + 1;
+    await candidate.save();
+
+    // Update election's votedUsers with user email
+    election.votedUsers.push(currentUser.email);
+    await election.save();
+
+    // Update user's isVoted status
+    const updatedUser = await User.findByIdAndUpdate(
+      currentUser._id,
+      { isVoted: true },
+      { new: true }
+    ).select("-password -role");
+
+    if (!updatedUser) throw new ApiError(404, 'User not found');
+
+    return ApiResponse(res, 200, 'Thanks for voting, your submission recorded successfully', updatedUser);
+  } catch (error: any) {
+    console.error('Error voting for candidate:', error);
+    return ApiResponse(res, error.statusCode || 500, error.message || 'Internal server error', null, null, null, error);
+  }
+};

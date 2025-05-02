@@ -7,7 +7,7 @@ export const generateAccessToken = (user: UserModel | AdminModel) => {
    return jwt.sign(
       {
          _id: user._id,
-         uniqueId: user.uniqueId,
+         email: user.email,
          role: user.role,
          isVoted: user.isVoted,
       },

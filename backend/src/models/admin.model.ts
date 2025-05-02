@@ -4,10 +4,10 @@ import bcrypt from 'bcrypt'
 import { AdminModel } from '../utils/types.util'
 
 const adminSchema: Schema = new Schema({
-   uniqueId: {
-      type: Number,
-      required: true,
-      unique: true
+   email:{
+      type:String,
+      required:true,
+      unique:true
    },
    password: {
       type: String,

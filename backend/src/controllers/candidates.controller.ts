@@ -1,4 +1,3 @@
-
 import { ApiResponse, ApiError } from "../utils/handlers";
 import mongoose from "mongoose";
 import { Request, Response } from "express";
@@ -36,12 +35,11 @@ export const addCandidate = async (req: Request, res: Response) => {
 
     // Check if candidate already exists
     const existedCandidate = await Candidate.findOne({
-      uniqueId: rest.uniqueId,
-      voterId: rest.voterId
+      email: rest.email
     });
 
     if (existedCandidate) {
-      throw new ApiError(400, 'Candidate with this Unique ID and Voter ID already exists');
+      throw new ApiError(400, 'Candidate with this email already exists');
     }
 
     // Handle avatar upload
@@ -70,10 +68,8 @@ export const addCandidate = async (req: Request, res: Response) => {
     const candidate = await Candidate.create({
       firstName: rest.firstName,
       lastName: rest.lastName,
-      uniqueId: rest.uniqueId,
-      voterId: rest.voterId,
+      email: rest.email,
       avatar: uploadAvatar.url,
-      representative: rest.representative,
       town: rest.town,
       candidateType: rest.candidateType.charAt(0).toUpperCase() + rest.candidateType.slice(1),
       dob: rest.dob,
@@ -94,7 +90,6 @@ export const addCandidate = async (req: Request, res: Response) => {
 
     return ApiResponse(res, 201, 'Candidate Added Successfully', candidate);
   } catch (error) {
-    // Pass the error to your error handling middleware
     if (error instanceof ApiError) {
       return ApiResponse(res, error.statusCode, error.message, null);
     }
@@ -135,7 +130,6 @@ export const getCandidateById = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 export const deleteCandidate = async (req: Request, res: Response) => {
   try {
@@ -211,11 +205,11 @@ export const updateCandidate = async (req: Request, res: Response) => {
     // Update only provided fields
     const updateFields: Partial<Record<string, any>> = {};
 
-    const { firstName, lastName, representative, town, candidateType, dob, promise } = req.body;
+    const { firstName, lastName, email, town, candidateType, dob, promise } = req.body;
 
     if (firstName) updateFields.firstName = firstName;
     if (lastName) updateFields.lastName = lastName;
-    if (representative) updateFields.representative = representative;
+    if (email) updateFields.email = email;
     if (town) updateFields.town = town;
     if (candidateType) updateFields.candidateType = candidateType;
     if (dob) updateFields.dob = new Date(dob);
@@ -288,7 +282,6 @@ export const getCandidates = async (req: Request, res: Response) => {
       }
     );
   } catch (error) {
-    // Handle errors
     if (error instanceof ApiError) {
       return ApiResponse(res, error.statusCode, error.message, null);
     }
@@ -339,7 +332,6 @@ export const getCandidateDetails = async (req: Request, res: Response) => {
       candidate
     );
   } catch (error) {
-    // Handle errors
     if (error instanceof ApiError) {
       return ApiResponse(res, error.statusCode, error.message, null);
     }

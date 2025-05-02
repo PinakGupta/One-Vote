@@ -23,13 +23,14 @@ export interface UserModel extends Document {
    _id: mongoose.Types.ObjectId,
    firstName: string,
    lastName: string,
-   uniqueId: number,
-   voterId: string,
+   email: string,
    password: string,
    role?: string,
    avatar?: string,
    isVoted?: boolean,
+   verified?: boolean
 }
+
 
 
 export interface JWT {
@@ -48,7 +49,7 @@ export interface Updates {
 
 
 export interface AdminModel extends Document {
-   uniqueId: number;
+   email:string;
    password: string;
    role: string;
    isVoted: boolean;
@@ -62,11 +63,9 @@ export interface CandidateModel extends Document {
    lastName: string,
    election: mongoose.Types.ObjectId,
    avatar: string,
-   voterId: string,
-   uniqueId: number,
+   email: string,
    votedUsers?: mongoose.Types.ObjectId[],
    town: string,
-   representative: string,
    candidateType: string,
    dob: Date,
    votesCount?: number,
@@ -88,9 +87,9 @@ export interface ElectionModel extends Document {
    admin: mongoose.Types.ObjectId;
    electionId: string;
    name: string;
-   voters: number[];
+   voters: string[];
    candidates: mongoose.Types.ObjectId[];
-   votedUsers: number[];
+   votedUsers: string[];
    showResults: boolean;
    startDate: Date;
    endDate?: Date;

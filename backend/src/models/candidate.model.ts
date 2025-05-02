@@ -22,13 +22,9 @@ const candidateSchema: Schema = new Schema({
       type: String,
       required: true
    },
-   voterId: {
-      type: String,
-      required: true
-   },
-   uniqueId: {
-      type: Number,
-      required: true
+   email:{
+      type:String,
+      required:true
    },
    votedUsers: {
       type: [
@@ -40,10 +36,6 @@ const candidateSchema: Schema = new Schema({
       default: []
    },
    town: {
-      type: String,
-      required: true
-   },
-   representative: {
       type: String,
       required: true
    },

@@ -17,7 +17,7 @@ const electionSchema = new Schema({
         required: true
     },
     voters: [{
-        type: Number,
+        type: String,
         default: []
     }],
     candidates: [{
@@ -26,7 +26,7 @@ const electionSchema = new Schema({
         default: []
     }],
     votedUsers: [{
-        type: Number,
+        type: String,
         default: []
     }],
     showResults: {
