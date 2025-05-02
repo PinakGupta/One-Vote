@@ -5,6 +5,9 @@ import { ApiResponse, ApiError } from '../utils/handlers';
 import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.util';
 import mongoose from 'mongoose';
 import { User } from '../models/user.model';
+import { Resend } from 'resend';
+import env from "../utils/env";
+import { voterNotificationTemplate } from '../utils/email-templates';
 
 export const checkEligibility = async (req: Request, res: Response) => {
   try {
@@ -271,6 +274,8 @@ export const getElection = async (req: Request, res: Response) => {
   }
 };
 
+const resend = new Resend(`${env.RESEND_API_KEY}`);
+
 export const addVoters = async (req: Request, res: Response) => {
   try {
     const { voters } = req.body;
@@ -288,7 +293,19 @@ export const addVoters = async (req: Request, res: Response) => {
       return email.trim();
     });
 
-    // Find by custom electionId and add unique voters
+    // Find election by ID before updating
+    const electionToUpdate = await Election.findOne({ electionId: req.params.electionId });
+    
+    // Handle case where no such election exists
+    if (!electionToUpdate) {
+      throw new ApiError(404, 'Election not found');
+    }
+
+    // Keep track of newly added voters
+    const existingVoters = new Set(electionToUpdate.voters);
+    const newlyAddedVoters = validEmails.filter(email => !existingVoters.has(email));
+
+    // Update election with new voters
     const election = await Election.findOneAndUpdate(
       { electionId: req.params.electionId },
       {
@@ -302,12 +319,72 @@ export const addVoters = async (req: Request, res: Response) => {
       }
     );
 
-    // Handle case where no such election exists
-    if (!election) {
-      throw new ApiError(404, 'Election not found');
+    // Send notification emails to newly added voters with throttling to avoid rate limits
+    if (newlyAddedVoters.length > 0) {
+      // Function to send email with retry logic
+      const sendEmail = async (email: string, retries = 2): Promise<{ email: string, success: boolean, messageId?: string, error?: any }> => {
+        try {
+          const { data, error } = await resend.emails.send({
+            from: 'OneVote <onboarding@resend.dev>', // Update with your domain
+            to: [email],
+            subject: `You've Been Added as a Voter - ${electionToUpdate.name}`,
+            html: voterNotificationTemplate(electionToUpdate.name, electionToUpdate.electionId)
+          });
+
+          if (error) {
+            console.error(`Failed to send notification to ${email}:`, error);
+            
+            // Retry logic
+            if (retries > 0) {
+              console.log(`Retrying email to ${email}, ${retries} attempts remaining`);
+              await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+              return sendEmail(email, retries - 1);
+            }
+            
+            return { email, success: false, error };
+          }
+          
+          return { email, success: true, messageId: data?.id };
+        } catch (err) {
+          console.error(`Error sending email to ${email}:`, err);
+          
+          // Retry logic
+          if (retries > 0) {
+            console.log(`Retrying email to ${email}, ${retries} attempts remaining`);
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+            return sendEmail(email, retries - 1);
+          }
+          
+          return { email, success: false, error: err };
+        }
+      };
+
+      // Process emails in batches to avoid rate limits (10 at a time)
+      const batchSize = 10;
+      const emailResults = [];
+
+      for (let i = 0; i < newlyAddedVoters.length; i += batchSize) {
+        const batch = newlyAddedVoters.slice(i, i + batchSize);
+        const batchResults = await Promise.all(batch.map(email => sendEmail(email)));
+        emailResults.push(...batchResults);
+        
+        // If not the last batch, wait 1 second before sending next batch
+        if (i + batchSize < newlyAddedVoters.length) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+      
+      // Count successful and failed emails
+      const successful = emailResults.filter(result => result.success).length;
+      const failed = emailResults.length - successful;
+
+      return ApiResponse(res, 200, 
+        `Voters added successfully. Notifications sent: ${successful}, Failed: ${failed}`, 
+        { election, emailResults }
+      );
     }
 
-    return ApiResponse(res, 200, 'Voters added successfully', election);
+    return ApiResponse(res, 200, 'Voters added successfully (no new voters to notify)', election);
   } catch (error: any) {
     throw new ApiError(error.statusCode || 500, error.message);
   }
