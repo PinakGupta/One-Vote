@@ -35,7 +35,7 @@ export interface UserModel extends Document {
 
 export interface JWT {
    _id: string,
-   uniqueId: string,
+   email: string,
    role: string,
    isVoted: boolean
 }
