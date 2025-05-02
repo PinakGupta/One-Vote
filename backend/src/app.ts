@@ -21,6 +21,7 @@ const corsOptions = {
    origin: [env.localhostCORS, env.serverhostCORS],
    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
    allowedHeaders: ['Content-Type','Authorization'],
+   credentials: true
 };
 app.use(cors(corsOptions))
 
