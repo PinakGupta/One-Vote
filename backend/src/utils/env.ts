@@ -23,6 +23,7 @@ const env = cleanEnv(process.env, {
    serverhostCORS: str(),
 
    PORT: port(),
+   RESEND_API_KEY: str(),
 
 });
 
