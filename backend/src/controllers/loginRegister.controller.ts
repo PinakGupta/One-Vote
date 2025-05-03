@@ -107,12 +107,21 @@ export const register = async (req: Request, res: Response) => {
 
          return ApiResponse(res, 200, "Admin registered successfully", admin, cookie);
       } else {
-         // Create User
-         const avatarFile = req.file?.path;
+         // Create User - New approach that works both locally and in production
          let savedAvatar;
 
-         if (avatarFile) {
-            savedAvatar = await uploadOnCloudinary(avatarFile);
+         if (req.file) {
+            try {
+               // Upload directly to Cloudinary from buffer - no need to save to disk
+               savedAvatar = await uploadOnCloudinary(req.file);
+
+               if (!savedAvatar || !savedAvatar.url) {
+                  console.warn("Cloudinary upload returned incomplete response:", savedAvatar);
+               }
+            } catch (uploadError) {
+               console.error("Error uploading avatar to Cloudinary:", uploadError);
+               // Continue with registration even if image upload fails
+            }
          }
 
          // Set verified to false for new user registration
@@ -159,6 +168,7 @@ export const register = async (req: Request, res: Response) => {
          return ApiResponse(res, 200, "User registered successfully. Please verify your email with the OTP sent to your email address.", user, cookie);
       }
    } catch (err: any) {
+      console.error("Registration error:", err);
       throw new ApiError(err.statusCode || 500, err.message || "Error while registering");
    }
 };

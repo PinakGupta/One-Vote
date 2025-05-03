@@ -9,21 +9,27 @@ cloudinary.config({
    api_secret: env.cloudinaryApiSecret
 })
 
-export const uploadOnCloudinary = async (localFilePath: string): Promise<UploadApiResponse> => {
+// Upload file from buffer (works both locally and in production)
+export const uploadOnCloudinary = async (file: Express.Multer.File): Promise<UploadApiResponse> => {
    try {
-
-      const response = await cloudinary.uploader.upload(localFilePath, {
+      // Convert buffer to base64 string for Cloudinary
+      const b64 = Buffer.from(file.buffer).toString('base64')
+      const dataURI = `data:${file.mimetype};base64,${b64}`
+      
+      // Upload to Cloudinary
+      const response = await cloudinary.uploader.upload(dataURI, {
          resource_type: "auto",
          folder: "voting application"
       })
-
-      fs.unlinkSync(localFilePath)
+      
       return response
    } catch (err: any) {
-      fs.unlinkSync(localFilePath)
-      return err
+      console.error("Error uploading to Cloudinary:", err)
+      throw err
    }
 }
+
+// Delete file from Cloudinary (unchanged)
 export const deleteFromCloudinary = async (incomingFile: string) => {
    const publicIdMatch = incomingFile.match(/\/upload\/(?:v\d+\/)?([^\/]+)\/([^\/]+)\.[a-z]+$/);
 
@@ -32,7 +38,7 @@ export const deleteFromCloudinary = async (incomingFile: string) => {
    }
 
    const folder = decodeURIComponent(publicIdMatch[1]);
-
    const publicId = `${folder}/${publicIdMatch[2]}`;
+   
    return await cloudinary.uploader.destroy(publicId)
 }

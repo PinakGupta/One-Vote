@@ -42,14 +42,14 @@ export const addCandidate = async (req: Request, res: Response) => {
       throw new ApiError(400, 'Candidate with this email already exists');
     }
 
-    // Handle avatar upload
-    const avatarLocalPath = req.file?.path;
-    if (!avatarLocalPath) {
+    // Handle avatar upload - modified for memory storage
+    if (!req.file) {
       throw new ApiError(400, 'Avatar is Required');
     }
 
-    const uploadAvatar = await uploadOnCloudinary(avatarLocalPath);
-    if (!uploadAvatar) {
+    // Upload directly from memory to Cloudinary
+    const uploadAvatar = await uploadOnCloudinary(req.file);
+    if (!uploadAvatar || !uploadAvatar.url) {
       throw new ApiError(400, 'Failed to upload avatar to cloud storage');
     }
 
@@ -215,19 +215,18 @@ export const updateCandidate = async (req: Request, res: Response) => {
     if (dob) updateFields.dob = new Date(dob);
     if (promise) updateFields.promise = Array.isArray(promise) ? promise : [promise];
 
-    // Handle avatar update
+    // Handle avatar update - modified for memory storage
     if (req.file) {
-      const newAvatarPath = req.file.path;
-      if (!newAvatarPath) throw new ApiError(400, "Avatar file is required");
-
-      // Upload new avatar
-      const uploadAvatar = await uploadOnCloudinary(newAvatarPath);
+      // Upload new avatar directly from memory
+      const uploadAvatar = await uploadOnCloudinary(req.file);
       if (!uploadAvatar?.url) throw new ApiError(500, "Failed to upload avatar");
 
       // Delete old avatar
       if (candidateData.avatar) {
         const deleteFile = await deleteFromCloudinary(candidateData.avatar);
-        if (!deleteFile) throw new ApiError(400, "Old avatar file not found");
+        if (!deleteFile) {
+          console.warn("Old avatar file not found or could not be deleted");
+        }
       }
 
       updateFields.avatar = uploadAvatar.url;
