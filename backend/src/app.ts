@@ -17,13 +17,13 @@ const app = express()
 app.use(express.json())
 
 
-const corsOptions = {
-   origin: [env.localhostCORS, env.serverhostCORS],
-   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-   allowedHeaders: ['Content-Type','Authorization'],
-   credentials: true
-};
-app.use(cors(corsOptions))
+app.use(cors({
+   origin: '*',                // Allow all origins
+   methods: '*',               // Allow all methods
+   allowedHeaders: '*',        // Allow all headers
+   credentials: true           // Still allow credentials if your app needs them
+ }));
+
 
 app.use(cookieParser())
 
