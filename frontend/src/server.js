@@ -1,4 +1,3 @@
-
-
-export const server = 'https://one-vote-rtjj.onrender.com/api/v1'
-export const serverWithId = 'https://one-vote-rtjj.onrender.com'
+// ✅ match exactly the uppercase names you defined
+export const server        = import.meta.env.VITE_SERVER
+export const serverWithId  = import.meta.env.VITE_SERVER_WITH_ID
