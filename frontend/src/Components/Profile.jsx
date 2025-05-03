@@ -1,26 +1,24 @@
-import { Link } from 'react-router-dom';
-import React, { useContext, useState } from 'react';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
 import { serverWithId } from '../server';
 import axios from 'axios';
 import { userContext } from '../context';
 import Button from './Button';
 
 function Profile() {
-  const userId = useSelector((state) => state.userValues.userId);
+  const { id } = useParams();
   const [user, setUserData] = useState({});
   const [err, setErr] = useState('');
   const { updateUserData, visitorType } = useContext(userContext);
 
   useEffect(() => {
     getUserDetails();
-  }, []);
+  }, [id]);  // re-run if id changes
 
   const getUserDetails = async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await axios.get(`${serverWithId}/${userId}/api/v1/user/profile`, {
+      const response = await axios.get(`${serverWithId}/${id}/api/v1/user/profile/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,7 +50,7 @@ function Profile() {
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <button type="button" className="text-xl md:text-2xl py-2 px-4 hover:text-gray-300 transition">
-              <Link to={`/${userId}`} state={visitorType}>
+              <Link to={`/${id}`} state={visitorType}>
                 <span>&lt; Back</span>
               </Link>
             </button>

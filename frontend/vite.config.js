@@ -12,7 +12,7 @@ export default defineConfig({
           // cors: false,
           // or to allow specific origins in dev:
           cors: {
-            origin: ['http://localhost:5173', 'https://one-vote-taupe.vercel.app']
+            origin: ['http://localhost:5173', 'https://one-vote-taupe.vercel.app','https://one-vote-sand.vercel.app']
           }
      }
 })

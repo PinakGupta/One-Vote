@@ -31,17 +31,26 @@ export const updateUser = async (req: Request, res: Response) => {
     const currentUser = req.data;
     if (!currentUser) throw new ApiError(401, 'User is not authorized');
 
-    const avatarLocalPath = req.file?.path;
-
-    if (avatarLocalPath) {
+    // Modified for memory-based file upload
+    if (req.file) {
       const alreadyHaveAvatar = currentUser.avatar;
-      const uploadAvatar = await uploadOnCloudinary(avatarLocalPath);
+      
+      // Upload directly from memory to Cloudinary
+      const uploadAvatar = await uploadOnCloudinary(req.file);
       if (!uploadAvatar?.url) throw new ApiError(500, 'Failed to upload avatar');
       updates.avatar = uploadAvatar.url;
 
+      // Delete old avatar if it exists
       if (alreadyHaveAvatar) {
-        const deleteFile = await deleteFromCloudinary(alreadyHaveAvatar);
-        if (!deleteFile) throw new ApiError(400, 'Avatar file not found');
+        try {
+          const deleteFile = await deleteFromCloudinary(alreadyHaveAvatar);
+          if (!deleteFile) {
+            console.warn('Could not delete previous avatar, proceeding with update');
+          }
+        } catch (deleteError) {
+          console.error('Error deleting previous avatar:', deleteError);
+          // Continue with update even if delete fails
+        }
       }
     }
 
