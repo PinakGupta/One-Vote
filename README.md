@@ -36,7 +36,43 @@
 
 ## 📸 Screenshots
 
-> *Add screenshots of admin dashboard, voting page, OTP verification, result chart, etc.*
+### User Interface Overview
+![User Interface Overview](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751739791/Screenshot_2025-07-05_235144_i6enzo.png)![](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751739877/Screenshot_2025-07-05_235410_ld2xas.png)
+
+
+### Admin Side Functionalities
+![](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740012/Screenshot_2025-07-05_235622_zrutrw.png)
+<br>
+#### Create Election
+![Create Election](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740109/Screenshot_2025-07-05_235802_rzogfa.png)
+
+#### Manage Candidates
+![Manage Candidates](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740231/Screenshot_2025-07-05_235953_hkjriw.png)
+
+#### Voter Whitelisting
+![Voter Whitelisting](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740323/IMG-20250705-WA0050_mvuolb.jpg)
+
+#### Result Control
+![Result Control](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740395/IMG-20250705-WA0042_rkv6xf.jpg)
+
+### Voter Side Functionalities
+
+#### Registration & OTP Verification
+![Registration & OTP Verification](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740457/IMG-20250705-WA0037_rratdu.jpg)![](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740514/WhatsApp_Image_2025-05-20_at_02.10.14_6225b492_mo7bjm.jpg)
+![](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740870/Screenshot_2025-07-06_000549_csvmm2.png)
+
+#### Join Election
+![Join Election](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740980/Screenshot_2025-07-06_001219_l2am0h.png)
+
+
+#### Cast Vote
+![Cast Vote](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751741089/Screenshot_2025-07-06_001359_ddkgc6.png)
+
+#### View Results
+![View Results](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751740788/IMG-20250705-WA0034_edotp2.jpg)
+
+#### Account Management
+![Account Management](https://res.cloudinary.com/dkk2rer7z/image/upload/v1751741182/IMG-20250705-WA0029_rskt44.jpg)
 
 ---
 
