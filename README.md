@@ -1,6 +1,3 @@
-Here's the properly formatted and cleaned-up version of your provided content in complete **README.md** code form:
-
-````markdown
 # OneVote - Secure, Flexible Voting Platform
 
 **OneVote** is a comprehensive web-based voting platform built with the **MERN stack** (MongoDB, Express.js, React.js, Node.js). It delivers a secure, transparent, and user-friendly voting experience designed for educational institutions, societies, and organizations.
@@ -16,7 +13,6 @@ Here's the properly formatted and cleaned-up version of your provided content in
   - Unique Election ID
   - Title & description
   
-
 - **Candidate Control**  
   Add candidates with name, party, state, and photo. Remove candidates even during active elections to handle disqualifications or withdrawals.
 
@@ -40,7 +36,7 @@ Here's the properly formatted and cleaned-up version of your provided content in
 
 ## 📸 Screenshots
 
-> _Add screenshots of admin dashboard, voting page, OTP verification, result chart, etc._
+> *Add screenshots of admin dashboard, voting page, OTP verification, result chart, etc.*
 
 ---
 
@@ -65,7 +61,7 @@ git clone https://github.com/your-repo/onevote-frontend.git
 cd onevote-frontend
 npm install
 npm start
-````
+```
 
 * Runs at: `http://localhost:3000`
 * By default, communicates with backend at: `http://localhost:5000`
