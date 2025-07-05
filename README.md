@@ -1,69 +1,120 @@
-# 🗳️ MERN Voting System
+Here's the properly formatted and cleaned-up version of your provided content in complete **README.md** code form:
 
-## 🌟 Overview
-This is a MERN (MongoDB, Express.js, React, Node.js) stack-based Voting System where the backend is built using TypeScript and the frontend in JavaScript. The system supports two types of users: **Admin** and **User**. Users can register using their **Aadhar number** and **Voter ID**, cast their votes, and view results when the admin decides to make them public. The Admin has the authority to manage candidates and control result visibility.
+````markdown
+# OneVote - Secure, Flexible Voting Platform
 
-## 🔥 Features
-### 👥 User
-- ✅ Register using **Aadhar number** and **Voter ID**.
-- 🗳️ Cast a vote for their preferred candidate.
-- 📊 View results when the admin enables them.
+**OneVote** is a comprehensive web-based voting platform built with the **MERN stack** (MongoDB, Express.js, React.js, Node.js). It delivers a secure, transparent, and user-friendly voting experience designed for educational institutions, societies, and organizations.
 
-### 🔧 Admin
-- ➕ Add new candidates.
-- ✏️ Update candidate details.
-- ❌ Remove candidates from the election.
-- 📌 View real-time vote counts at the backend.
-- 📢 Control when the results are publicly displayed.
+---
+
+## 🚀 Features
+
+### 🔧 Admin Capabilities
+
+- **Multiple Election Management**  
+  Create and manage multiple elections simultaneously. Each election has:
+  - Unique Election ID
+  - Title & description
+  
+
+- **Candidate Control**  
+  Add candidates with name, party, state, and photo. Remove candidates even during active elections to handle disqualifications or withdrawals.
+
+- **Voter Whitelisting & Email Integration**  
+  Whitelist voters per election and send Election IDs automatically via email using Resend API.
+
+- **Result Visibility Control**  
+  Choose when to display results (immediately or later) with interactive bar charts built with Recharts.
+
+---
+
+## 💡 Voter Experience
+
+- Responsive UI for both desktop and mobile  
+- Access elections via unique **Election ID**  
+- One-click vote submission  
+- Detailed candidate cards with photos and manifestos  
+- View participation history across multiple elections
+
+---
+
+## 📸 Screenshots
+
+> _Add screenshots of admin dashboard, voting page, OTP verification, result chart, etc._
+
+---
 
 ## 🛠️ Tech Stack
-- **Frontend:** React (JavaScript) ⚛️
-- **Backend:** Node.js, Express.js (TypeScript) 🚀
-- **Database:** MongoDB 🍃
-- **Authentication:** JWT for security 🔑
-- **Styling:** CSS / Tailwind 🎨
-- **State Management:** Redux (optional for large-scale data handling) 🗂️
 
-## 🚀 Installation and Setup
+- **Frontend:** React.js, Tailwind CSS  
+- **Backend:** Node.js, Express.js  
+- **Database:** MongoDB  
+- **Authentication:** JWT, Bcrypt, OTP  
+- **Email API:** Resend  
+- **Image Hosting:** Cloudinary  
+- **Charting:** Recharts
 
-### ✅ Prerequisites
-Ensure you have the following installed:
-- 🟢 Node.js
-- 🍃 MongoDB
-- 📦 npm / yarn
+---
 
-### 🔙 Backend Setup
+## 🚧 Setup Instructions
+
+### 🔹 Frontend (Client)
+
 ```bash
-cd backend
+git clone https://github.com/your-repo/onevote-frontend.git
+cd onevote-frontend
 npm install
+npm start
+````
+
+* Runs at: `http://localhost:3000`
+* By default, communicates with backend at: `http://localhost:5000`
+
+---
+
+### 🔹 Backend (Server)
+
+```bash
+git clone https://github.com/your-repo/onevote-backend.git
+cd onevote-backend
+npm install
+```
+
+Create a `.env` file with the following variables:
+
+```env
+MONGO_URI=<your-mongodb-connection-string>
+JWT_SECRET=<your-jwt-secret>
+RESEND_API_KEY=<your-resend-api-key>
+CLOUDINARY_URL=<your-cloudinary-url>
+```
+
+Start the backend in development mode:
+
+```bash
 npm run dev
 ```
 
-### 🔜 Frontend Setup
-```bash
-cd frontend
-npm install
-npm start
-```
+* Runs at: `http://localhost:5000`
+* Exposes REST APIs for: authentication, OTP verification, election handling, candidate management, voting, and result retrieval.
 
-## 🔗 API Endpoints
-### 👤 User Endpoints
-- `POST /api/auth/register` - 📝 Register a user with **Aadhar number** and **Voter ID**.
-- `POST /api/auth/login` - 🔑 Login user/admin.
-- `POST /api/vote/:candidateId` - 🗳️ Cast a vote.
-- `GET /api/results` - 📊 Fetch voting results (only when enabled by admin).
+---
 
-### 🔧 Admin Endpoints
-- `POST /api/admin/add-candidate` - ➕ Add a new candidate.
-- `PUT /api/admin/update-candidate/:id` - ✏️ Update candidate details.
-- `DELETE /api/admin/remove-candidate/:id` - ❌ Remove a candidate.
-- `GET /api/admin/vote-counts` - 📌 View vote counts (backend only).
-- `PATCH /api/admin/show-results` - 📢 Enable/disable public results.
+## 📈 Use Cases
 
-## 🔒 Security Measures
-- **🔑 JWT Authentication**: Protects endpoints and ensures only authenticated users and admins can access them.
-- **🛡️ Hashed Passwords**: Passwords are encrypted using bcrypt.
-- **✅ Data Validation**: Aadhar and Voter ID validation ensure only legitimate users can register.
+* Student council elections
+* University or departmental voting
+* Club or society leadership polls
+* Organizational board or leadership elections
 
+---
 
+## 🎯 Conclusion
 
+**OneVote** is a **professional, secure, and flexible** voting solution. It enhances traditional tools like Google Forms by offering:
+
+* Real-time candidate management
+* Voter authentication
+* Election-specific access via Election IDs
+* Transparent result handling
+* Responsive design for modern users
